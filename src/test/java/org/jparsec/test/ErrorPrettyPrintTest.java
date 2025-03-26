@@ -1,0 +1,96 @@
+package org.jparsec.test;
+
+import org.jparsec.combinator.Whitespace;
+import org.jparsec.containers.Err;
+import org.jparsec.containers.ParseContext;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import static org.jparsec.combinator.Chars.any;
+import static org.jparsec.combinator.Chars.anyOf;
+import static org.jparsec.combinator.Lexeme.lexeme;
+import static org.jparsec.combinator.Seq.seq;
+import static org.jparsec.combinator.Strings.string;
+
+public class ErrorPrettyPrintTest {
+
+    @Test
+    public void correct_line_and_column() {
+        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var breakOnLine3 = seq(lexeme(any(), ws),
+                                lexeme(any(), ws),
+                                lexeme(anyOf('a'), ws));
+
+        var text = """
+                a
+                b
+                c
+                """;
+
+        var result = breakOnLine3.parse(ParseContext.of(text));
+        if (result instanceof Err e) {
+            Assertions.assertEquals("""
+                    b
+                    >>c
+                    --------
+                    Line: 2, Column: 0
+                    a could not be matched""", e.errorPrettyPrint());
+        } else {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    public void correct_line_and_column_3() {
+        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var breakOnLine2 = seq(lexeme(any(), ws),
+                lexeme(seq(anyOf('a'), string("xxx")), ws),
+                lexeme(any(), ws));
+
+        var text = """
+                a
+                ayyy
+                c
+                """;
+
+        var result = breakOnLine2.parse(ParseContext.of(text));
+        if (result instanceof Err e) {
+            Assertions.assertEquals("""
+                    a
+                    a>>yyy
+                    c
+                    --------
+                    Line: 1, Column: 1
+                    expected "xxx\"""", e.errorPrettyPrint());
+        } else {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    public void correct_line_and_column_2() {
+        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var breakOnLine2 = seq(lexeme(any(), ws),
+                lexeme(anyOf('a'), ws),
+                lexeme(any(), ws));
+
+        var text = """
+                a
+                b
+                c
+                """;
+
+        var result = breakOnLine2.parse(ParseContext.of(text));
+        if (result instanceof Err e) {
+            Assertions.assertEquals("""
+                    a
+                    >>b
+                    c
+                    --------
+                    Line: 1, Column: 0
+                    a could not be matched""", e.errorPrettyPrint());
+        } else {
+            Assertions.fail();
+        }
+    }
+}
