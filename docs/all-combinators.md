@@ -384,18 +384,19 @@ var ws = spaces(Whitespace.Config.defaults()
         .withSinglelineComment("//")
         .withMultilineComment("/*", "*/"));
 
-var line = choice(
-        string("\\"),
-        some(noneOf(' ', '\n'))
-                .map(Ops::toString)
-).takeWhile(p -> p.left().isPresent())
+var line = choice(string("//"), string("\n"), any())
+    .takeWhile(p -> {
+    return p.three().isPresent();
+        })
                 .map(lst -> lst.stream()
-                        .map(e -> e.right().get()).toList())
-                        .map(Ops::concat);
+                        .map(e -> e.three().get()).toList())
+                        .map(Ops::toString)
+        .failIf(String::isEmpty, "stop condition");
 
 var lexeme = lexeme(line, ws);
 
-var text = lexeme.dropLeft(some(lexeme));
+
+var text = ws.dropLeft(some(lexeme));
 
 var r1 = text.parseThrow("""
         /*
