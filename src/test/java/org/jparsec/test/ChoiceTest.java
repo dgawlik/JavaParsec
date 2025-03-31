@@ -1,15 +1,14 @@
 package org.jparsec.test;
 
-import org.jparsec.combinator.Chars;
 import org.jparsec.containers.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 
 import static org.jparsec.combinator.Choice.choice;
-import static org.jparsec.combinator.Strings.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.jparsec.Api.*;
 
 class ChoiceTest {
 
@@ -17,7 +16,7 @@ class ChoiceTest {
     public void test_id(){
         var polymorphic = choice(
                 string("hello"),
-                Chars.any(),
+                any(),
                 string("true").map(Boolean::valueOf),
                 string("1").map(Integer::valueOf),
                 string("1.2").map(Double::valueOf)

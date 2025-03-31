@@ -30,8 +30,8 @@ public class Whitespace extends Rule<Empty> {
             return this;
         }
 
-        public Config withMultilineComment(Pair<String, String> multilineComment) {
-            this.multilineComment = multilineComment;
+        public Config withMultilineComment(String start, String end) {
+            this.multilineComment = new Pair<>(start, end);
             return this;
         }
     }

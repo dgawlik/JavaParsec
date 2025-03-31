@@ -11,19 +11,25 @@ import java.util.function.Predicate;
 public class Satisfy extends Rule<Character> {
 
     private final Predicate<Character> matcher;
+    private final String toString;
 
     public Satisfy(Predicate<Character> matcher) {
         this(matcher, "Satisfy: predicate fail");
     }
 
     public Satisfy(Predicate<Character> matcher, String message) {
+        this(matcher, message, "<predicate>");
+    }
+
+    public Satisfy(Predicate<Character> matcher, String message, String toString) {
         super(message);
         this.matcher = matcher;
+        this.toString = toString;
     }
 
     @Override
     public String toString() {
-        return "<pred>";
+        return toString;
     }
 
     @Override

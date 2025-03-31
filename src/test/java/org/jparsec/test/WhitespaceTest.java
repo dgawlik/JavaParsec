@@ -43,7 +43,7 @@ public class WhitespaceTest {
     @Test
     public void test_accept_multiline_comments() {
         var ws = Whitespace.spaces(Whitespace.Config.defaults()
-                .withMultilineComment(new Pair<>("#{", "#}")));
+                .withMultilineComment("#{", "#}"));
 
         var ctx = ParseContext.of("""
                 #{

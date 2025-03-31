@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.jparsec.combinator.Chars.anyOf;
-import static org.jparsec.combinator.Chars.noneOf;
+import static org.jparsec.Api.*;
 import static org.jparsec.combinator.Many.many;
 import static org.jparsec.combinator.Sep.sepBy;
 import static org.jparsec.combinator.Seq.seq;

@@ -1,6 +1,5 @@
 package org.jparsec.test;
 
-import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
 import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Test;
@@ -8,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.jparsec.combinator.Chars.anyOf;
-import static org.jparsec.combinator.Chars.noneOf;
+
+import static org.jparsec.Api.*;
 import static org.jparsec.combinator.Many.some;
 import static org.jparsec.combinator.Sep.sepBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;

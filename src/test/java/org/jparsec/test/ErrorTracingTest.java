@@ -18,18 +18,18 @@ public class ErrorTracingTest {
 
         if (result instanceof Err e) {
             Assertions.assertEquals("""
-                    Line: 0, Column: 0 => More than zero of a::c required
+                    Line: 0, Column: 0 => More than zero of 'a'::'c' required
                      +- Line: 0, Column: 1 => error in sequence
                       +- Line: 0, Column: 1 => error in alternative
-                       +- Line: 0, Column: 1 => c could not be matched
+                       +- Line: 0, Column: 1 => expected 'c'
                     """, e.errorTrace());
             Assertions.assertEquals("""
-                    Line: 0, Column: 1 => c could not be matched
-                    Line: 0, Column: 1 => error in alternative
-                    Line: 0, Column: 1 => d could not be matched
-                    Line: 0, Column: 1 => error in sequence
-                    Line: 0, Column: 0 => More than zero of a::c required
-                    """, e.verboseErrors());
+                 Line: 0, Column: 1 => expected 'c'
+                 Line: 0, Column: 1 => error in alternative
+                 Line: 0, Column: 1 => expected 'd'
+                 Line: 0, Column: 1 => error in sequence
+                 Line: 0, Column: 0 => More than zero of 'a'::'c' required
+                 """, e.verboseErrors());
         } else {
             Assertions.fail();
         }

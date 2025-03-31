@@ -6,8 +6,7 @@ import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.jparsec.combinator.Chars.any;
-import static org.jparsec.combinator.Chars.anyOf;
+import static org.jparsec.Api.*;
 import static org.jparsec.combinator.Lexeme.lexeme;
 import static org.jparsec.combinator.Seq.seq;
 import static org.jparsec.combinator.Strings.string;
@@ -16,7 +15,7 @@ public class ErrorPrettyPrintTest {
 
     @Test
     public void correct_line_and_column() {
-        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var ws = spaces(Whitespace.Config.defaults());
         var breakOnLine3 = seq(lexeme(any(), ws),
                                 lexeme(any(), ws),
                                 lexeme(anyOf('a'), ws));
@@ -34,7 +33,7 @@ public class ErrorPrettyPrintTest {
                     >>c
                     --------
                     Line: 2, Column: 0
-                    a could not be matched""", e.errorPrettyPrint());
+                    expected 'a'""", e.errorPrettyPrint());
         } else {
             Assertions.fail();
         }
@@ -88,7 +87,7 @@ public class ErrorPrettyPrintTest {
                     c
                     --------
                     Line: 1, Column: 0
-                    a could not be matched""", e.errorPrettyPrint());
+                    expected 'a'""", e.errorPrettyPrint());
         } else {
             Assertions.fail();
         }

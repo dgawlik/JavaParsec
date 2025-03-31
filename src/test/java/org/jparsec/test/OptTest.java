@@ -1,10 +1,10 @@
 package org.jparsec.test;
 
-import org.jparsec.combinator.Chars;
 import org.jparsec.combinator.Opt;
 import org.jparsec.containers.Ok;
 import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Test;
+import static org.jparsec.Api.*;
 
 import java.util.Optional;
 
@@ -14,7 +14,7 @@ class OptTest {
 
     @Test
     public void test_optional() {
-        var optA = Opt.opt(Chars.anyOf('a'));
+        var optA = Opt.opt(anyOf('a'));
 
         var ctx1 = ParseContext.of("a");
         var result = optA.parse(ctx1);

@@ -3,57 +3,75 @@ package org.jparsec;
 import org.jparsec.combinator.*;
 import org.jparsec.containers.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class Api {
 
-    public static AnyChar any() {
-        return Chars.any();
+    public static Satisfy any() {
+        return new Satisfy(c -> true, "", "any char");
     }
 
-    public static CharsOf anyOf(Character... chars) {
-        return Chars.anyOf(chars);
+    public static Satisfy anyOf(Character... chars) {
+        var lst = Arrays.asList(chars);
+        var charsMsg = String.join(",",
+                lst.stream().map(c -> "'"+c+"'").toList());
+        return new Satisfy(lst::contains, "expected " +  charsMsg, charsMsg);
+
     }
 
-    public static WhitespaceChar whitespace() {
-        return Chars.whitespace();
+    public static Satisfy c(Character ch) {
+        return new Satisfy(c -> c == ch,
+                "expected '" + ch +"'", "char '"+ch+"'");
     }
 
-    public static Digit nonZeroDigit() {
-        return Chars.nonZeroDigit();
+    public static Satisfy whitespace() {
+        return new Satisfy(Character::isWhitespace, "expected whitespace", "<ws>");
     }
 
-    public static Digit digit() {
-        return Chars.digit();
+    public static Satisfy nonZeroDigit() {
+        return new Satisfy(c -> Character.isDigit(c) && c != '0',
+                "expected non zero digit", "'1'..'9'");
     }
 
-    public static Satisfy alpha() {
-        return Chars.alpha();
+    public static Satisfy digit() {
+        return new Satisfy(Character::isDigit, "expected digit", "'0'..'9'");
+    }
+
+    public static Satisfy letter() {
+        return new Satisfy(Character::isLetter, "expected letter", "alpha char");
     }
 
     public static Satisfy alphaNum() {
-        return Chars.alphaNum();
+        return new Satisfy(Character::isLetterOrDigit,
+                "expected letter or digit", "alphanum char");
     }
 
     public static Satisfy lower() {
-        return Chars.lower();
+        return new Satisfy(Character::isLowerCase, "expected lower char", "lower char");
     }
 
     public static Satisfy upper() {
-        return Chars.upper();
+        return new Satisfy(Character::isUpperCase, "expected upper char", "upper char");
     }
 
     public static Satisfy satisfy(Predicate<Character> pred) {
-        return Chars.satisfy(pred);
+        return new Satisfy(pred);
     }
 
-    public static CharRange range(Character start, Character end) {
-        return Chars.range(start, end);
+    public static Satisfy range(Character start, Character end) {
+        var rangeS = "'"+start+"'..'"+end+"'";
+        return new Satisfy(c -> c >= start && c <= end,
+                "expected "+rangeS, rangeS);
     }
 
-    public static NoneOf noneOf(Character... inverseMatchers) {
-        return Chars.noneOf(inverseMatchers);
+    public static Satisfy noneOf(Character... inverseMatchers) {
+        var lst = Arrays.asList(inverseMatchers);
+        var charsMsg = String.join(",",
+                lst.stream().map(c -> "'"+c+"'").toList());
+        return new Satisfy(c -> !lst.contains(c),
+                "not expecting "+charsMsg, "none of "+charsMsg);
     }
 
     public static <T, U> Rule<Either<T, U>> choice(Rule<T> c1, Rule<U> c2) {

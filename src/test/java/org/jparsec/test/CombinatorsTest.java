@@ -2,8 +2,6 @@ package org.jparsec.test;
 
 import org.jparsec.Api;
 import org.jparsec.Ops;
-import org.jparsec.combinator.Chars;
-import org.jparsec.combinator.Strings;
 import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.*;
 import org.junit.jupiter.api.Assertions;
@@ -12,14 +10,13 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jparsec.combinator.Strings.string;
-import static org.jparsec.combinator.Whitespace.spaces;
+import static org.jparsec.Api.*;
 
 public class CombinatorsTest {
 
     @Test
     public void take_while_test() {
-        var takeA = Chars.any().takeWhile(c -> c == 'a')
+        var takeA = any().takeWhile(c -> c == 'a')
                 .map(lc -> lc.stream()
                         .map(c -> "" + c)
                         .collect(Collectors.joining()));
@@ -84,7 +81,7 @@ public class CombinatorsTest {
 
     @Test
     public void test_trim_left() {
-        var hello = Strings.string("hello");
+        var hello = string("hello");
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = ws.dropLeft(hello);
@@ -99,7 +96,7 @@ public class CombinatorsTest {
 
     @Test
     public void test_trim_right() {
-        var hello = Strings.string("hello");
+        var hello = string("hello");
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = hello.dropRight(ws);

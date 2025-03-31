@@ -5,7 +5,7 @@ import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.jparsec.combinator.Chars.anyOf;
+import static org.jparsec.Api.*;
 import static org.jparsec.combinator.Choice.choice;
 import static org.jparsec.combinator.Opt.opt;
 import static org.jparsec.combinator.Seq.seq;
@@ -21,21 +21,21 @@ class ErrorHandlingTest {
 
         var result = seq3.parse(ParseContext.of("bbc"));
         if (result instanceof Err(String msg, _)) {
-            Assertions.assertEquals("a could not be matched", msg);
+            Assertions.assertEquals("expected 'a'", msg);
         } else {
             fail();
         }
 
         result = seq3.parse(ParseContext.of("acc"));
         if (result instanceof Err(String msg, _)) {
-            Assertions.assertEquals("b could not be matched", msg);
+            Assertions.assertEquals("expected 'b'", msg);
         } else {
             fail();
         }
 
         result = seq3.parse(ParseContext.of("abd"));
         if (result instanceof Err(String msg, _)) {
-            Assertions.assertEquals("c could not be matched", msg);
+            Assertions.assertEquals("expected 'c'", msg);
         } else {
             fail();
         }
@@ -47,7 +47,7 @@ class ErrorHandlingTest {
 
         var result = aOrB.parse(ParseContext.of("c"));
         if (result instanceof Err(String msg, _)) {
-            assertEquals("a could not be matched", msg);
+            assertEquals("expected 'a'", msg);
         } else {
             fail();
         }
@@ -61,7 +61,7 @@ class ErrorHandlingTest {
 
         var result = complex.parse(ParseContext.of("add"));
         if (result instanceof Err(String msg, _)) {
-            Assertions.assertEquals("b could not be matched", msg);
+            Assertions.assertEquals("expected 'b'", msg);
         } else {
             fail();
         }

@@ -1,6 +1,5 @@
 package org.jparsec.test;
 
-import org.jparsec.combinator.Chars;
 import org.jparsec.combinator.Lexeme;
 import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.Err;
@@ -8,12 +7,13 @@ import org.jparsec.containers.Ok;
 import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import static org.jparsec.Api.*;
 
 public class LexemeTest {
 
     @Test
     public void lexeme_test(){
-        var ch = Chars.anyOf('a');
+        var ch = anyOf('a');
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
         var lexeme = Lexeme.lexeme(ch, ws);
 
@@ -41,7 +41,7 @@ public class LexemeTest {
         var result3 = lexeme.parse(ctx3);
 
         if (result3 instanceof Err(String msg, ParseContext resCtx)){
-            Assertions.assertEquals("a could not be matched", msg);
+            Assertions.assertEquals("expected 'a'", msg);
             Assertions.assertEquals(0, resCtx.index);
         } else {
             Assertions.fail();

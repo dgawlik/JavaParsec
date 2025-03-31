@@ -17,8 +17,26 @@ public abstract class Rule<T> {
 
     public abstract ParseResult<T> parse(ParseContext ctx);
 
+    public ParseResult<T> parse(String text) {
+        return parse(Api.input(text));
+    }
+
+    public T parseThrow(String text) {
+        return switch (parse(Api.input(text))) {
+            case Ok(T val, _) -> val;
+            case Err e -> throw new ParseException(e.error());
+        };
+    }
+
     public Optional<T> parseMaybe(ParseContext ctx) {
         return switch (parse(ctx)) {
+            case Ok(T val, _) -> Optional.of(val);
+            case Err e -> Optional.empty();
+        };
+    }
+
+    public Optional<T> parseMaybe(String text) {
+        return switch (parse(input(text))) {
             case Ok(T val, _) -> Optional.of(val);
             case Err e -> Optional.empty();
         };
