@@ -15,7 +15,7 @@ public class IndentationTest {
 
     @Test
     public void test_yaml_lists() {
-        var elem = seq(string("- "), some(Api.noneOf('\n', ':')))
+        var elem = seq(Api.c("- "), some(Api.noneOf('\n', ':')))
                 .map(Ops::takeSecond).map(Ops::toString);
         Recursive<List<Either<Pair, String>>> list = recursive();
         var container = seq(elem, Api.anyOf(':'), indent(seq(nl(), list)

@@ -30,7 +30,7 @@ public class Newline extends Rule<Character> {
             ParseContext ctxIt = ctx;
             outer:
             while (true) {
-                switch (Api.string(ctx.indentPattern).parse(ctxIt)) {
+                switch (Api.c(ctx.indentPattern).parse(ctxIt)) {
                     case Ok(_, ParseContext newCtx) -> {
                         ctxIt = newCtx;
                         indentCount++;

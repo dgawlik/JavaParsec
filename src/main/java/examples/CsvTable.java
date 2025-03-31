@@ -4,6 +4,7 @@ import org.jparsec.containers.Tuple4;
 
 import java.util.List;
 
+import static java.lang.System.out;
 import static org.jparsec.Api.*;
 
 record Employee(String firstName, String lastName, int age) {
@@ -15,37 +16,34 @@ record Table(List<Employee> people) {
 public void main() {
 
     var escapedString = seq(
-            anyOf('"'),
-            many(seq(anyOf('\\'), anyOf('"')).map(Ops::seqToList)
-                    .or(noneOf('"').map(Ops::singleton))
-                    .map(Ops::takeAny))
-                    .map(Ops::flatten)
-                    .map(Ops::toString),
-            anyOf('"')
-    ).map(Ops::takeMiddle);
+            c('"'),
+            many(any(join(c('\\'), c('"'),
+                    noneOf('"').s()))),
+            c('"').s()
+    ).map(Ops::takeMiddle).map(Ops::concat);
 
     var normalString = many(noneOf(',', '\n'))
             .map(Ops::toString);
 
-    var string = escapedString.or(normalString).map(Ops::takeAny);
+    var string = any(escapedString, normalString);
 
     var header = seq(
-            string("firstName"),
-            anyOf(','),
-            string("lastName"),
-            anyOf(','),
-            string("age")
+            c("firstName"),
+            c(','),
+            c("lastName"),
+            c(','),
+            c("age")
     );
 
     var row = seq(
             string,
-            anyOf(','),
+            c(','),
             string,
-            anyOf(','),
+            c(','),
             string.map(Integer::valueOf)
     ).setInternalDescription("row");
 
-    var rows = sepBy(row, anyOf('\n'))
+    var rows = sepBy(row, c('\n'))
             .map(l ->
                     l.stream().map(t -> new Employee(t.one(), t.three(), t.five()))
                             .toList()
@@ -53,9 +51,9 @@ public void main() {
 
     var table = seq(
             header,
-            anyOf('\n'),
+            c('\n'),
             rows,
-            opt(anyOf('\n'))
+            opt(c('\n'))
     ).map(Tuple4::three).map(Table::new);
 
     var result = table.parse(input("""
@@ -64,8 +62,8 @@ public void main() {
             Guido,"van Rossum",50
             """));
     if (result instanceof Ok(Table r, _)) {
-        println(r);
+        out.println(r);
     } else {
-        println(result.errorPrettyPrint());
+        out.println(result.errorPrettyPrint());
     }
 }

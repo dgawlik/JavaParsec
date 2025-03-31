@@ -10,7 +10,7 @@ public class EndOfStreamTest {
 
     @Test
     public void should_fail() {
-        var singleA = any().seq(eos());
+        var singleA = anyChar().seq(eos());
 
         var result = singleA.parse(input("aa"));
         if (result instanceof Err(String msg, _)) {

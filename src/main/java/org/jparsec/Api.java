@@ -9,21 +9,21 @@ import java.util.function.Predicate;
 
 public class Api {
 
-    public static Satisfy any() {
+    public static Satisfy anyChar() {
         return new Satisfy(c -> true, "", "any char");
     }
 
     public static Satisfy anyOf(Character... chars) {
         var lst = Arrays.asList(chars);
         var charsMsg = String.join(",",
-                lst.stream().map(c -> "'"+c+"'").toList());
-        return new Satisfy(lst::contains, "expected " +  charsMsg, charsMsg);
+                lst.stream().map(c -> "'" + c + "'").toList());
+        return new Satisfy(lst::contains, "expected " + charsMsg, charsMsg);
 
     }
 
     public static Satisfy c(Character ch) {
         return new Satisfy(c -> c == ch,
-                "expected '" + ch +"'", "char '"+ch+"'");
+                "expected '" + ch + "'", "char '" + ch + "'");
     }
 
     public static Satisfy whitespace() {
@@ -61,17 +61,17 @@ public class Api {
     }
 
     public static Satisfy range(Character start, Character end) {
-        var rangeS = "'"+start+"'..'"+end+"'";
+        var rangeS = "'" + start + "'..'" + end + "'";
         return new Satisfy(c -> c >= start && c <= end,
-                "expected "+rangeS, rangeS);
+                "expected " + rangeS, rangeS);
     }
 
     public static Satisfy noneOf(Character... inverseMatchers) {
         var lst = Arrays.asList(inverseMatchers);
         var charsMsg = String.join(",",
-                lst.stream().map(c -> "'"+c+"'").toList());
+                lst.stream().map(c -> "'" + c + "'").toList());
         return new Satisfy(c -> !lst.contains(c),
-                "not expecting "+charsMsg, "none of "+charsMsg);
+                "not expecting " + charsMsg, "none of " + charsMsg);
     }
 
     public static <T, U> Rule<Either<T, U>> choice(Rule<T> c1, Rule<U> c2) {
@@ -138,6 +138,26 @@ public class Api {
         return Seq.seq(one, two, three, four, five, six, seven);
     }
 
+    @SafeVarargs
+    public static <U> Rule<U> any(Rule<U>... rules) {
+        assert rules.length > 1;
+
+        var it = rules[0];
+        for (int i = 1; i < rules.length; i++) {
+            it = it.any(rules[i]);
+        }
+
+        return it;
+    }
+
+    public static Rule<String> concat(Rule<List<Character>> list) {
+        return list.map(Ops::toString);
+    }
+
+    public static Rule<String> sconcat(Rule<List<String>> list) {
+        return list.map(Ops::concat);
+    }
+
     public static <U> Rule<List<U>> many(Rule<U> inner) {
         return Many.many(inner);
     }
@@ -159,8 +179,19 @@ public class Api {
         return Opt.opt(inner);
     }
 
-    public static Str string(String pattern) {
-        return Strings.string(pattern);
+    public static Str c(String pattern) {
+        return Strings.c(pattern);
+    }
+
+    public static Rule<String> join(Rule<?>... rules) {
+        assert rules.length > 1;
+
+        var it = rules[0];
+        for (int i = 1; i < rules.length; i++) {
+            it = it.seq(rules[i]).map(p -> p.first().toString() + p.second().toString());
+        }
+
+        return (Rule<String>) it;
     }
 
     public static Str stringIgnoreCase(String pattern) {

@@ -11,7 +11,7 @@ class CharsTest {
 
     @Test
     public void test_wildcard() {
-        var wildcard = any();
+        var wildcard = anyChar();
         var ctx = ParseContext.of("a");
 
         var result = wildcard.parse(ctx);
@@ -20,7 +20,7 @@ class CharsTest {
 
     @Test
     public void test_wildcard_fail() {
-        var wildcard = any();
+        var wildcard = anyChar();
         var ctx = ParseContext.of("");
 
         var result = wildcard.parse(ctx);

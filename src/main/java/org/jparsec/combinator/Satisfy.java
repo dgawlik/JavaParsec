@@ -1,5 +1,6 @@
 package org.jparsec.combinator;
 
+import org.jparsec.Ops;
 import org.jparsec.Rule;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
@@ -25,6 +26,18 @@ public class Satisfy extends Rule<Character> {
         super(message);
         this.matcher = matcher;
         this.toString = toString;
+    }
+
+    public Concat join(Satisfy c) {
+        return new Concat(this.map(Ops::toString), c.map(Ops::toString));
+    }
+
+    public Rule<String> s() {
+        return this.map(Object::toString);
+    }
+
+    public Concat join(Str s) {
+        return new Concat(this.map(Ops::toString), s);
     }
 
     @Override

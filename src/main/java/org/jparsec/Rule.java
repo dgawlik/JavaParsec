@@ -88,7 +88,6 @@ public abstract class Rule<T> {
         return new Map<>(this, fn);
     }
 
-
     public Rule<T> failIf(Predicate<T> fn, String errorMessage) {
         return new FailIf<>(this, fn, errorMessage);
     }
@@ -103,6 +102,10 @@ public abstract class Rule<T> {
 
     public <U> Rule<Either<T, U>> or(Rule<U> other) {
         return new Or<>(this, other);
+    }
+
+    public Rule<T> any(Rule<T> other) {
+        return this.or(other).map(e -> e.left().isPresent() ? e.left().get() : e.right().get());
     }
 
     public <U> Rule<Pair<T, U>> seq(Rule<U> other) {

@@ -6,7 +6,7 @@ import org.jparsec.containers.Either;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
 
-import static java.io.IO.println;
+import static java.lang.System.out;
 import static org.jparsec.Api.*;
 
 sealed interface Expression {
@@ -64,21 +64,18 @@ sealed interface Expression {
 public void main() {
 
     var hexInteger = seq(
-            string("0x"),
-            times(digit().or(range('a', 'f')).map(Ops::takeAny),
-                    1, 8)
-                    .map(Ops::toString)
+            c("0x"),
+            join(times(any(digit(), range('a', 'f')),
+                    1, 8))
     ).map(Ops::takeSecond);
 
-    var rawInteger = string("0")
-            .or(nonZeroDigit()
-                    .seq(many(digit())).map(Ops::prepend)
-                    .map(Ops::toString))
-            .map(Ops::takeAny);
+    var rawInteger = any(c("0"),
+            join(nonZeroDigit(),
+                    many(digit()).map(Ops::toString)));
 
     var whitespace = spaces(Whitespace.Config.defaults());
 
-    var integer = lexeme(hexInteger.or(rawInteger).map(Ops::takeAny), whitespace)
+    var integer = lexeme(any(hexInteger, rawInteger), whitespace)
             .map(Integer::valueOf);
 
     var op = lexeme(anyOf('+', '-', '*', '/', '%'), whitespace);
@@ -88,9 +85,9 @@ public void main() {
     var value = integer.map(i -> new Expression.Value(i));
 
     var parens = seq(
-            lexeme(anyOf('('), whitespace),
+            lexeme(c('('), whitespace),
             expr,
-            lexeme(anyOf(')'), whitespace)
+            lexeme(c(')'), whitespace)
     ).map(Ops::takeMiddle).map(Expression.Parens::new);
 
     var binary = seq(value.or(parens).map(e -> {
@@ -109,10 +106,10 @@ public void main() {
 
     switch (result) {
         case Ok(Expression e, _) -> {
-            println(e.calculate());
+            out.println(e.calculate());
         }
         case Err e -> {
-            println(e.errorPrettyPrint());
+            out.println(e.errorPrettyPrint());
         }
     }
 }

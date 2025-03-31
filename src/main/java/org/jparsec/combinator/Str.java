@@ -1,5 +1,6 @@
 package org.jparsec.combinator;
 
+import org.jparsec.Ops;
 import org.jparsec.Rule;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
@@ -15,6 +16,14 @@ public class Str extends Rule<String> {
         super("expected \"" + pattern + "\"");
         this.pattern = pattern;
         this.caseInsensitive = caseInsensitive;
+    }
+
+    public Concat join(Satisfy c) {
+        return new Concat(this, c.map(Ops::toString));
+    }
+
+    public Concat join(Str s) {
+        return new Concat(this, s);
     }
 
     @Override

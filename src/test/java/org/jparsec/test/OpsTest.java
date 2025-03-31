@@ -34,11 +34,11 @@ class OpsTest {
     public void test_concat() {
         var cText = Api.seq(
                 Api.anyOf('a').map(Ops::toString),
-                Api.string(" or "),
+                Api.c(" or "),
                 Api.anyOf('b').map(Ops::toString),
-                Api.string(" or "),
+                Api.c(" or "),
                 Api.anyOf('c').map(Ops::toString),
-                Api.string(" or "),
+                Api.c(" or "),
                 Api.anyOf('d').map(Ops::toString)
 
         ).map(Ops::concat);
@@ -54,7 +54,7 @@ class OpsTest {
     @Test
     public void test_concat2() {
         var cText = Api.many(
-                Api.string("ab")
+                Api.c("ab")
         ).map(Ops::concat);
 
         var result = cText.parse(ParseContext.of("ababab"));
@@ -68,7 +68,7 @@ class OpsTest {
     @Test
     public void test_sep() {
         var cText = Api.sepBy(
-                Api.string("ab"),
+                Api.c("ab"),
                 Api.anyOf(',')
         ).map(ops(",")::sepJoin);
 

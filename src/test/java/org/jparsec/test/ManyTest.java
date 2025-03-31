@@ -16,7 +16,7 @@ class ManyTest {
 
     @Test
     public void test_many() {
-        var two = Many.many(Strings.string("hello"));
+        var two = Many.many(Strings.c("hello"));
 
         var res = two.parse(ParseContext.of("hellohello"));
         if (res instanceof Ok(List<String> r, _)) {
@@ -35,7 +35,7 @@ class ManyTest {
 
     @Test
     public void test_some() {
-        var two = Many.some(Strings.string("hello"));
+        var two = Many.some(Strings.c("hello"));
 
         var res = two.parse(ParseContext.of(""));
         if (res instanceof Err(String msg, _)) {

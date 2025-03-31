@@ -2,7 +2,7 @@ package org.jparsec.combinator;
 
 public interface Strings {
 
-    static Str string(String pattern) {
+    static Str c(String pattern) {
         return new Str(pattern, false);
     }
 

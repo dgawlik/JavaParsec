@@ -6,7 +6,7 @@ import org.jparsec.containers.ParseContext;
 import org.jparsec.containers.Tuple7;
 import org.junit.jupiter.api.Test;
 
-import static org.jparsec.combinator.Strings.string;
+import static org.jparsec.combinator.Strings.c;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -15,13 +15,13 @@ class SeqTest {
 
     @Test
     public void test_id() {
-        var longSeq = Seq.seq(string("quick "),
-                string("brown "),
-                string("fox "),
-                string("jumped "),
-                string("over "),
-                string("lazy "),
-                string("dog"));
+        var longSeq = Seq.seq(c("quick "),
+                c("brown "),
+                c("fox "),
+                c("jumped "),
+                c("over "),
+                c("lazy "),
+                c("dog"));
 
         var ctx = ParseContext.of("quick brown fox jumped over lazy dog");
         var result = longSeq.parse(ctx);

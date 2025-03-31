@@ -6,6 +6,7 @@ import org.jparsec.containers.ParseContext;
 
 import java.util.List;
 
+import static java.lang.System.out;
 import static org.jparsec.Api.*;
 import static org.jparsec.combinator.Seq.seq;
 
@@ -17,7 +18,7 @@ interface ListItem {
 
 public void main() {
     Rule<String> singleElem = seq(
-            string("* "),
+            c("* "),
             some(noneOf('\n'))
     )
     .map(Ops::takeSecond)
@@ -47,8 +48,8 @@ public void main() {
     * Sun sets again"""));
 
     if (result instanceof Ok o) {
-        System.out.println(o.value());
+        out.println(o.value());
     } else {
-        System.out.println(result.errorPrettyPrint());
+        out.println(result.errorPrettyPrint());
     }
 }

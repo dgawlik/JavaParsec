@@ -1,4 +1,3 @@
-import org.jparsec.Ops;
 import org.jparsec.containers.Either.Left;
 import org.jparsec.containers.Either.Right;
 import org.jparsec.containers.Pair;
@@ -7,54 +6,49 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static java.io.IO.println;
+import static java.lang.System.out;
+
 import static org.jparsec.Api.*;
 
 public void main() {
 
-    var year = times(digit(), 4)
-            .map(Ops::toString)
+    var year = concat(times(digit(), 4))
             .map(Integer::valueOf);
 
-    var month = times(digit(), 2)
-            .map(Ops::toString)
+    var month = concat(times(digit(), 2))
             .map(Integer::valueOf)
             .failIf(i -> i < 1 || i > 12, "wrong month");
 
-    var day = times(digit(), 2)
-            .map(Ops::toString)
+    var day = concat(times(digit(), 2))
             .map(Integer::valueOf)
             .failIf(i -> i > 31, "wrong day");
 
     var date = seq(
             year,
-            anyOf('-'),
+            c('-'),
             month,
-            anyOf('-'),
+            c('-'),
             day
     ).map(t -> LocalDate.of(t.one(), t.three(), t.five()));
 
-    var hour = times(digit(), 2)
-            .map(Ops::toString)
+    var hour = concat(times(digit(), 2))
             .map(Integer::valueOf)
             .failIf(i -> i > 24, "wrong hour");
 
-    var minute = times(digit(), 2)
-            .map(Ops::toString)
+    var minute = concat(times(digit(), 2))
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong minute");
 
-    var second = times(digit(), 2)
-            .map(Ops::toString)
+    var second = concat(times(digit(), 2))
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong second");
 
     var time = seq(
-            anyOf('T'),
+            c('T'),
             hour,
-            anyOf(':'),
+            c(':'),
             minute,
-            anyOf(':'),
+            c(':'),
             second
     ).map(t -> LocalTime.of(t.two(), t.four(), t.six()));
 
@@ -66,7 +60,7 @@ public void main() {
         case Right(LocalDate value) -> new Right<>(value);
     });
 
-    println(datetime.parse(input("2024-03-23")));
-    println(datetime.parse(input("2024-03-23T11:33:01")));
-    println(datetime.parse(input("2024-13-23")));
+    out.println(datetime.parse(input("2024-03-23")));
+    out.println(datetime.parse(input("2024-03-23T11:33:01")));
+    out.println(datetime.parse(input("2024-13-23")));
 }

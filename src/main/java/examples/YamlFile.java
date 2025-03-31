@@ -1,5 +1,8 @@
 import org.jparsec.Ops;
 import org.jparsec.Rule;
+
+import java.util.ArrayList;
+import java.util.Map;
 import org.jparsec.combinator.Recursive;
 import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.*;
@@ -7,7 +10,9 @@ import org.jparsec.containers.Either.Left;
 import org.jparsec.containers.Either.Right;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.lang.System.out;
 import static java.util.stream.Collectors.toMap;
 import static org.jparsec.Api.*;
 
@@ -30,49 +35,45 @@ sealed interface Node {
 
 public void main() {
 
-    var scalar = some(noneOf('\n', '}', ']', ',')).map(Ops::toString);
+    var scalar = concat(some(noneOf('\n', '}', ']', ',')));
     scalar.assertParses("\"hello\"  world ;");
 
     var doubleQuoted = seq(
-            anyOf('"'),
-            many(seq(
+            c('"'),
+            sconcat(many(any(join(
                     anyOf('\\'),
                     anyOf('"')
-            ).map(Ops::toString)
-                    .or(noneOf('\n', '"')
-                            .map(Ops::toString)).map(Ops::takeAny)),
+            ),noneOf('\n', '"').s()))),
             anyOf('"')
-    ).map(Ops::takeMiddle).map(Ops::concat);
+    ).map(Ops::takeMiddle);
 
     doubleQuoted.assertParses("\"abc'\\n\\t xxx\"");
     doubleQuoted.assertFails("\"unclosed");
     doubleQuoted.assertFails("\" with newline \n \"");
 
     var singleQuoted = seq(
-            anyOf('\''),
-            many(seq(
+            c('\''),
+            sconcat(many(any(join(
                     anyOf('\\'),
                     anyOf('\'')
-            ).map(Ops::toString)
-                    .or(noneOf('\n', '\'')
-                            .map(Ops::toString)).map(Ops::takeAny)),
-            anyOf('\'')
-    ).map(Ops::takeMiddle).map(Ops::concat);
+            ),noneOf('\n', '\'').s()))),
+            c('\'')
+    ).map(Ops::takeMiddle);
 
     singleQuoted.assertParses("'abc\"\\n\\t xxx\"'");
     singleQuoted.assertFails("'unclosed");
     singleQuoted.assertFails("' with newline \n '");
 
     Rule<String> blockScalar = seq(
-            anyOf('|').or(anyOf('>'))
+            c('|').or(c('>'))
                     .map(e -> e.left().isEmpty()),
-            anyOf('\n'),
+            c('\n'),
             some(seq(
-                    many(anyOf(' ')).map(Ops::toString),
-                    some(noneOf('\n')).map(Ops::toString),
-                    anyOf('\n').map(Ops::toString)
+                    concat(many(anyOf(' '))),
+                    concat(some(noneOf('\n'))),
+                    c('\n').s()
             )),
-            anyOf('\n')
+            c('\n')
     ).map(block -> {
         var isFold = block.one();
         var lines = block.three();
@@ -123,22 +124,22 @@ public void main() {
 
     var keyValue = seq(
             lexeme(identifier, ws),
-            lexeme(anyOf(':'), ws),
+            lexeme(c(':'), ws),
             lexeme(flowNode, ws)
     ).map(t -> new Pair<>(t.one(), t.three()));
 
     var flowKeyValues = seq(
-            lexeme(anyOf('{').map(Ops::toString), ws),
-            sepBy(lexeme(keyValue, ws), lexeme(anyOf(','), ws)),
-            lexeme(anyOf('}'), ws)
+            lexeme(c('{').s(), ws),
+            sepBy(lexeme(keyValue, ws), lexeme(c(','), ws)),
+            lexeme(c('}'), ws)
     ).map(Ops::takeMiddle)
             .map(v -> v.stream()
                     .collect(toMap(Pair::first, Pair::second)));
 
     var flowList = seq(
-            lexeme(anyOf('[').map(Ops::toString), ws),
-            sepBy(lexeme(flowNode, ws), lexeme(anyOf(','), ws)),
-            anyOf(']')
+            lexeme(c('[').s(), ws),
+            sepBy(lexeme(flowNode, ws), lexeme(c(','), ws)),
+            c(']')
     ).map(Ops::takeMiddle);
 
     var flowScalar = choice(blockScalar, singleQuoted, doubleQuoted, scalar)
@@ -161,7 +162,7 @@ public void main() {
 
     var blockKeyValue = seq(
             lexeme(identifier, ws),
-            lexeme(anyOf(':'), ws),
+            lexeme(c(':'), ws),
             lexeme(indent(
                     seq(nl(), blockNode)
                             .map(Ops::takeSecond),
@@ -186,7 +187,7 @@ public void main() {
 
 
     var blockList = sepBy(
-            seq(string("- "), indentedBlockKeyValues.or(flowNode).map(Ops::takeAny))
+            seq(c("- "), indentedBlockKeyValues.or(flowNode).map(Ops::takeAny))
                     .map(Ops::takeSecond),
             nl()
     );
@@ -260,5 +261,5 @@ public void main() {
                     """;
 
     var result = yaml.parse(input(test));
-    println(result);
+    out.println(result);
 }

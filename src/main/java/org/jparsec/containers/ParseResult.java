@@ -14,6 +14,20 @@ public sealed interface ParseResult<T> permits Ok, Err {
         };
     }
 
+    default T ok() {
+        if (this instanceof Ok(T value, _)) {
+            return value;
+        }
+        throw new IllegalStateException("Cannot access result");
+    }
+
+    default String error() {
+        if (this instanceof Err(String msg, _ )){
+            return msg;
+        }
+        throw new IllegalStateException("Cannot access error on ok");
+    }
+
     default String errorTrace() {
         if (this instanceof Err(String err, ParseContext ctx)) {
             var baos = new ByteArrayOutputStream();

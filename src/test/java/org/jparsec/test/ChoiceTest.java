@@ -1,5 +1,6 @@
 package org.jparsec.test;
 
+import org.jparsec.Api;
 import org.jparsec.containers.*;
 import org.junit.jupiter.api.Test;
 
@@ -15,11 +16,11 @@ class ChoiceTest {
     @Test
     public void test_id(){
         var polymorphic = choice(
-                string("hello"),
-                any(),
-                string("true").map(Boolean::valueOf),
-                string("1").map(Integer::valueOf),
-                string("1.2").map(Double::valueOf)
+                Api.c("hello"),
+                anyChar(),
+                Api.c("true").map(Boolean::valueOf),
+                Api.c("1").map(Integer::valueOf),
+                Api.c("1.2").map(Double::valueOf)
         );
 
         Function<ParseContext, Empty> test = (ctx) -> {
@@ -40,6 +41,14 @@ class ChoiceTest {
         test.apply(ParseContext.of("1"));
         test.apply(ParseContext.of("1.2"));
 
+    }
+
+    @Test
+    public void test_uniform_choice() {
+        var m = any(c('a'), c('b'), c('c'), c('d'));
+
+        var r = m.parse("b");
+        assertEquals('b', (char) r.ok());
     }
 
 }

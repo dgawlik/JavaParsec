@@ -11,7 +11,7 @@ public class StringsTest {
 
     @Test
     public void test_exact() {
-        var exact = Strings.string("abc");
+        var exact = Strings.c("abc");
 
         var ctx1 = ParseContext.of("abc");
         var result = exact.parse(ctx1);

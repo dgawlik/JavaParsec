@@ -16,7 +16,7 @@ public class CombinatorsTest {
 
     @Test
     public void take_while_test() {
-        var takeA = any().takeWhile(c -> c == 'a')
+        var takeA = anyChar().takeWhile(c -> c == 'a')
                 .map(lc -> lc.stream()
                         .map(c -> "" + c)
                         .collect(Collectors.joining()));
@@ -32,7 +32,7 @@ public class CombinatorsTest {
 
     @Test
     public void test_or() {
-        var helloOrWorld = string("hello").or(string("world"));
+        var helloOrWorld = Api.c("hello").or(Api.c("world"));
 
         Function<ParseContext, Empty> test = (ParseContext ctx) -> {
             switch (helloOrWorld.parse(ctx)) {
@@ -56,9 +56,9 @@ public class CombinatorsTest {
 
     @Test
     public void test_seq() {
-        var helloWorld = string("hello")
+        var helloWorld = Api.c("hello")
                 .seq(spaces(Whitespace.Config.defaults()))
-                .seq(string("world"));
+                .seq(Api.c("world"));
 
         var ctx1 = ParseContext.of("hello \n world");
         var result = helloWorld.parse(ctx1);
@@ -81,7 +81,7 @@ public class CombinatorsTest {
 
     @Test
     public void test_trim_left() {
-        var hello = string("hello");
+        var hello = Api.c("hello");
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = ws.dropLeft(hello);
@@ -96,7 +96,7 @@ public class CombinatorsTest {
 
     @Test
     public void test_trim_right() {
-        var hello = string("hello");
+        var hello = Api.c("hello");
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = hello.dropRight(ws);
