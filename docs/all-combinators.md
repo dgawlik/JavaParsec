@@ -16,13 +16,13 @@ Matches any single character.
 
 ```java
 var result = anyChar().parse("a");
-if (result instanceof Ok(Character c, ParseContext ctx)){
+if (result instanceof Ok(Character c, Context ctx)){
     assert (char) c == 'a';
     assert (int) ctx.index == 1;
 }
 
 var err = anyChar().parse("");
-if (err instanceof Err(String msg, ParseContext ctx)) {
+if (err instanceof Err(String msg, Context ctx)) {
     assert "unexpected end of stream".equals(msg);
     assert (int) ctx.index == 0;
 }    
@@ -84,12 +84,12 @@ Matches single digit excluding zero.
 
 ```java
 var r1 = nonZeroDigit().parse("1");
-if (r1 instanceof Ok(Character c, ParseContext ctx)){
+if (r1 instanceof Ok(Character c, Context ctx)){
     assert (char) c == '1';
 }
 
 var r2 = nonZeroDigit().parse("0");
-if (r2 instanceof Err(String msg, ParseContext ctx)) {
+if (r2 instanceof Err(String msg, Context ctx)) {
     assert "expected non zero digit".equals(msg);
 }
 ```
@@ -173,8 +173,8 @@ for (char i = 'a'; i <= 'f'; i++){
 }
 
 var e = range('a', 'f').parse("g");
-if (e instanceof Err(String msg, ParseContext ctx)) {
-    "expected 'a'..'f'".equals(msg);
+if (e instanceof Err(String msg, Context ctx)) {
+    assert "expected 'a'..'f'".equals(msg);
 }
 ```
 
@@ -264,7 +264,7 @@ Returns Rule\<List\<U>>
 var parser = many(anyOf('a', 'b')).s();
 
 var r = parser.parse("aabbababcccc");
-if (r instanceof Ok(String r2, ParseContext ctx)){
+if (r instanceof Ok(String r2, Context ctx)){
    assert r2.equals("aabbabab");
    assert ctx.index == ctx.content.indexOf("c");
 }
@@ -282,7 +282,7 @@ Returns Rule\<List\<U>>
 var parser = some(anyOf('a', 'b')).s();
 
 var e = parser.parse("ccccc");
-if (e instanceof Err(String msg, ParseContext ctx)) {
+if (e instanceof Err(String msg, Context ctx)) {
     assert "expected 'a','b'".equals(msg);
 }
 ```
@@ -474,7 +474,7 @@ Asserts both rules are matched but discards the last one.
 ```java
 var trimComment = c("hello").dropRight(seq(many(c(' ')), c("//"), many(noneOf('\n'))));
 var result = trimComment.parse("hello  // this is a comment\n");
-if (result instanceof Ok(String r, ParseContext ctx)){
+if (result instanceof Ok(String r, Context ctx)){
         assert r.equals("hello");
         assert ctx.index == 27;
 } else {
