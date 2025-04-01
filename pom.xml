@@ -6,7 +6,7 @@
 
     <groupId>org.jparsec</groupId>
     <artifactId>JavaParsec</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
 
     <name>Java Parsec</name>
     <description>Parser combinators for Java 24</description>
@@ -60,9 +60,6 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
-                    <compilerArgs>
-                        --enable-preview
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -78,6 +75,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
             </plugin>
         </plugins>
     </build>

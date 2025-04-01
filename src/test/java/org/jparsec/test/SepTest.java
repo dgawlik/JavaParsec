@@ -21,7 +21,7 @@ class SepTest {
         var commaSep = sepBy(some(noneOf(',')).map(this::join), anyOf(','));
 
         var result = commaSep.parse(ParseContext.of("one,two,three"));
-        if (result instanceof Ok(List<String> r, _)) {
+        if (result instanceof Ok(List<String> r, ParseContext ctx)) {
             assertEquals("one", r.get(0));
             assertEquals("two", r.get(1));
             assertEquals("three", r.get(2));

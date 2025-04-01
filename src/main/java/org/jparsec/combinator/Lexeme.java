@@ -1,10 +1,7 @@
 package org.jparsec.combinator;
 
 import org.jparsec.Rule;
-import org.jparsec.containers.Err;
-import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.*;
 
 public class Lexeme<T> extends Rule<T> {
 
@@ -33,7 +30,7 @@ public class Lexeme<T> extends Rule<T> {
 
         switch (result) {
             case Ok(T value, ParseContext newCtx) -> {
-                if (ws.parse(newCtx) instanceof Ok(_, ParseContext newCtx2)) {
+                if (ws.parse(newCtx) instanceof Ok(Empty e, ParseContext newCtx2)) {
                     return new Ok<>(value, newCtx2);
                 } else {
                     return new Ok<>(value, newCtx);

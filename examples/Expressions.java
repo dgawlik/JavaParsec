@@ -5,6 +5,7 @@ import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.Either;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
+import org.jparsec.containers.ParseContext;
 
 import static java.lang.System.out;
 import static org.jparsec.Api.*;
@@ -20,7 +21,7 @@ sealed interface Expression {
     }
 
     default int predecence() {
-        if (this instanceof Binary(_, _, Character op)) {
+        if (this instanceof Binary(Expression e1, Expression e2, Character op)) {
             return switch (op) {
                 case '-', '+' -> 1;
                 case '*', '/' -> 2;
@@ -105,7 +106,7 @@ public void main() {
     var result = expr.parse(input("3*2+1*(1+2)"));
 
     switch (result) {
-        case Ok(Expression e, _) -> {
+        case Ok(Expression e, ParseContext ctx) -> {
             out.println(e.calculate());
         }
         case Err e -> {

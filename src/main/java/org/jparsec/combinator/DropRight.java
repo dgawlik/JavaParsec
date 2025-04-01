@@ -22,14 +22,14 @@ public class DropRight<T, U> extends Rule<T> {
         var keepRes = that.parse(ctx);
 
         return switch (keepRes) {
-            case Err(String msg, _) -> {
+            case Err(String msg, ParseContext ctx2) -> {
                 ctx.addVerboseError(errorMessage);
                 ctx.appendTrace(errorMessage);
                 yield new Err<>(msg, ctx);
             }
             case Ok(T res, ParseContext newCtx) -> switch (other.parse(newCtx)) {
-                case Ok(_, ParseContext newCtx2) -> new Ok<>(res, newCtx2);
-                case Err(String msg, _) -> {
+                case Ok(U res2, ParseContext newCtx2) -> new Ok<>(res, newCtx2);
+                case Err(String msg, ParseContext c) -> {
                     newCtx.appendTrace(errorMessage);
                     newCtx.addVerboseError(errorMessage);
                     yield new Err<>(customError.orElse(msg), newCtx);

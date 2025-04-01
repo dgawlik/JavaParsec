@@ -36,10 +36,10 @@ public class CombinatorsTest {
 
         Function<ParseContext, Empty> test = (ParseContext ctx) -> {
             switch (helloOrWorld.parse(ctx)) {
-                case Ok(Either.Left(String s), _) -> {
+                case Ok(Either.Left(String s), ParseContext c) -> {
                     Assertions.assertEquals("hello", s);
                 }
-                case Ok(Either.Right(String s), _) -> {
+                case Ok(Either.Right(String s), ParseContext c) -> {
                     Assertions.assertEquals("world", s);
                 }
                 case Err(String msg, ParseContext newCtx) -> {
@@ -63,7 +63,7 @@ public class CombinatorsTest {
         var ctx1 = ParseContext.of("hello \n world");
         var result = helloWorld.parse(ctx1);
 
-        if (result instanceof Ok(Pair(Pair(String h, _), String w), ParseContext newCtx)) {
+        if (result instanceof Ok(Pair(Pair(String h, Empty e), String w), ParseContext newCtx)) {
             Assertions.assertEquals("hello", h);
             Assertions.assertEquals("world", w);
             Assertions.assertEquals(newCtx.content.length(), newCtx.index);
@@ -74,7 +74,7 @@ public class CombinatorsTest {
         var ctx2 = ParseContext.of("hello \n baz");
         result = helloWorld.parse(ctx2);
 
-        if (result instanceof Err(_, ParseContext newCtx)) {
+        if (result instanceof Err(String m, ParseContext newCtx)) {
             Assertions.assertEquals(8, newCtx.index);
         }
     }
@@ -117,7 +117,7 @@ public class CombinatorsTest {
                 .failIf(i -> i > 31, "day number cant be greater than 31");
 
         var result = day.parse(ParseContext.of("32"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext c)) {
             Assertions.assertEquals("day number cant be greater than 31", msg);
         } else {
             Assertions.fail();

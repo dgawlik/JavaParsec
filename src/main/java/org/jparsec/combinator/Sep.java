@@ -57,7 +57,7 @@ public class Sep<T, U> extends Rule<List<T>> {
                     ctxIt.addVerboseError("error in "+this);
                     break outer;
                 }
-                case Ok(_, ParseContext newCtx) -> {
+                case Ok(Object r, ParseContext newCtx) -> {
                     ctxIt = newCtx;
                 }
             }

@@ -22,13 +22,13 @@ public class DropLeft<T, U> extends Rule<U> {
         var discardRes = that.parse(ctx);
 
         return switch (discardRes) {
-            case Ok(_, ParseContext newCtx) -> {
+            case Ok(T r, ParseContext newCtx) -> {
                 if (that.customError.isPresent()) {
                     other.setErrorMessage(errorMessage);
                 }
                 yield other.parse(newCtx);
             }
-            case Err(String msg, _) -> {
+            case Err(String msg, ParseContext ctx2) -> {
                 var errMsg = customError.orElse(msg);
                 ctx.addVerboseError(errorMessage);
                 ctx.appendTrace(errorMessage);

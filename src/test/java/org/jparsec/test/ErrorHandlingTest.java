@@ -20,21 +20,21 @@ class ErrorHandlingTest {
         var seq3 = seq(anyOf('a'), anyOf('b'), anyOf('c'));
 
         var result = seq3.parse(ParseContext.of("bbc"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("expected 'a'", msg);
         } else {
             fail();
         }
 
         result = seq3.parse(ParseContext.of("acc"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("expected 'b'", msg);
         } else {
             fail();
         }
 
         result = seq3.parse(ParseContext.of("abd"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("expected 'c'", msg);
         } else {
             fail();
@@ -46,7 +46,7 @@ class ErrorHandlingTest {
         var aOrB = choice(anyOf('a'), anyOf('b'));
 
         var result = aOrB.parse(ParseContext.of("c"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             assertEquals("expected 'a'", msg);
         } else {
             fail();
@@ -60,7 +60,7 @@ class ErrorHandlingTest {
                 opt(anyOf('d')));
 
         var result = complex.parse(ParseContext.of("add"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("expected 'b'", msg);
         } else {
             fail();
@@ -74,7 +74,7 @@ class ErrorHandlingTest {
                 opt(anyOf('d')));
 
         var result = complex.parse(ParseContext.of("add"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("special error message", msg);
         } else {
             fail();
@@ -88,7 +88,7 @@ class ErrorHandlingTest {
                 opt(anyOf('d'))).setErrorMessage("visible error");
 
         var result = complex.parse(ParseContext.of("add"));
-        if (result instanceof Err(String msg, _)) {
+        if (result instanceof Err(String msg, ParseContext ctx)) {
             Assertions.assertEquals("visible error", msg);
         } else {
             fail();

@@ -36,7 +36,7 @@ public class CsvTest {
                 Dominik,"#C,Gawlik",34/""";
 
         var result = csv.parse(ParseContext.of(text));
-        if (result instanceof Ok(_, _)){
+        if (result instanceof Ok(List<List<String>> r, ParseContext ctx)){
             Assertions.assertTrue(true);
         } else {
             fail();

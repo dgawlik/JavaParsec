@@ -25,11 +25,11 @@ class ChoiceTest {
 
         Function<ParseContext, Empty> test = (ctx) -> {
             switch(polymorphic.parse(ctx)) {
-                case Ok(One(String v), _) -> assertEquals("hello", v);
-                case Ok(Two(Character c), _) -> {}
-                case Ok(Three(Boolean b), _) -> assertEquals(true,  b);
-                case Ok(Four(Integer i), _) -> assertEquals(1, (int) i);
-                case Ok(Five(Double d), _) -> assertEquals(1.2, (double) d);
+                case Ok(One(String v), ParseContext c) -> assertEquals("hello", v);
+                case Ok(Two(Character c), ParseContext ct) -> {}
+                case Ok(Three(Boolean b), ParseContext c) -> assertEquals(true,  b);
+                case Ok(Four(Integer i), ParseContext c) -> assertEquals(1, (int) i);
+                case Ok(Five(Double d), ParseContext c) -> assertEquals(1.2, (double) d);
                 default -> fail();
             }
             return new Empty();

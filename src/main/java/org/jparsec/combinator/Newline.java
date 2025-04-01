@@ -2,10 +2,7 @@ package org.jparsec.combinator;
 
 import org.jparsec.Api;
 import org.jparsec.Rule;
-import org.jparsec.containers.Err;
-import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.*;
 
 public class Newline extends Rule<Character> {
 
@@ -31,7 +28,7 @@ public class Newline extends Rule<Character> {
             outer:
             while (true) {
                 switch (Api.c(ctx.indentPattern).parse(ctxIt)) {
-                    case Ok(_, ParseContext newCtx) -> {
+                    case Ok(String s, ParseContext newCtx) -> {
                         ctxIt = newCtx;
                         indentCount++;
                     }

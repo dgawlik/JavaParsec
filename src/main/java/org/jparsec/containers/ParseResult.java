@@ -15,14 +15,14 @@ public sealed interface ParseResult<T> permits Ok, Err {
     }
 
     default T ok() {
-        if (this instanceof Ok(T value, _)) {
+        if (this instanceof Ok(T value, ParseContext ctx)) {
             return value;
         }
         throw new IllegalStateException("Cannot access result");
     }
 
     default String error() {
-        if (this instanceof Err(String msg, _ )){
+        if (this instanceof Err(String msg, ParseContext ctx2 )){
             return msg;
         }
         throw new IllegalStateException("Cannot access error on ok");
@@ -57,10 +57,10 @@ public sealed interface ParseResult<T> permits Ok, Err {
         var out = new PrintWriter(baos);
 
         switch (this) {
-            case Ok(_, ParseContext ctx) -> {
+            case Ok(T v, ParseContext ctx) -> {
                 ctx.allErrors.forEach(out::println);
             }
-            case Err(_, ParseContext ctx) -> {
+            case Err(String m, ParseContext ctx) -> {
                 ctx.allErrors.forEach(out::println);
             }
         }

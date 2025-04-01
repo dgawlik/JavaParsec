@@ -8,6 +8,7 @@ import org.jparsec.containers.ParseResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 
 public class Many<T> extends Rule<List<T>> {
@@ -21,11 +22,25 @@ public class Many<T> extends Rule<List<T>> {
         this.inner = inner;
     }
 
-    public static <U> Rule<List<U>> many(Rule<U> inner) {
+    public <U> Rule<U> reduce(U init, BiFunction<T, U, U> reducer) {
+        return this.map(lst -> {
+            U it = init;
+            for (T el : lst) {
+                it = reducer.apply(el, it);
+            }
+            return it;
+        });
+    }
+
+    public Rule<String> s() {
+        return this.reduce("", (T el, String acc) -> acc + el.toString());
+    }
+
+    public static <U> Many<U> many(Rule<U> inner) {
         return new Many<>(inner, false);
     }
 
-    public static <U> Rule<List<U>> some(Rule<U> inner) {
+    public static <U> Many<U> some(Rule<U> inner) {
         return new Many<>(inner, true);
     }
 
@@ -39,7 +54,7 @@ public class Many<T> extends Rule<List<T>> {
         List<T> results = new ArrayList<>();
         ParseContext ctxIt = ctx;
 
-        if (isSome){
+        if (isSome) {
             switch (inner.parse(ctxIt)) {
                 case Ok(T r, ParseContext newCtx) -> {
                     ctxIt = newCtx;

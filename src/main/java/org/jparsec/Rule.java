@@ -23,27 +23,27 @@ public abstract class Rule<T> {
 
     public T parseThrow(String text) {
         return switch (parse(Api.input(text))) {
-            case Ok(T val, _) -> val;
+            case Ok(T val, ParseContext ctx) -> val;
             case Err e -> throw new ParseException(e.error());
         };
     }
 
     public Optional<T> parseMaybe(ParseContext ctx) {
         return switch (parse(ctx)) {
-            case Ok(T val, _) -> Optional.of(val);
+            case Ok(T val, ParseContext ctx2) -> Optional.of(val);
             case Err e -> Optional.empty();
         };
     }
 
     public Optional<T> parseMaybe(String text) {
         return switch (parse(input(text))) {
-            case Ok(T val, _) -> Optional.of(val);
+            case Ok(T val, ParseContext ctx) -> Optional.of(val);
             case Err e -> Optional.empty();
         };
     }
 
     public void assertParses(String text) {
-        if (this.dropRight(eos()).parse(input(text)) instanceof Err(String msg, _)) {
+        if (this.dropRight(eos()).parse(input(text)) instanceof Err(String msg, ParseContext ctx2)) {
             throw new ParseException(msg);
         }
     }

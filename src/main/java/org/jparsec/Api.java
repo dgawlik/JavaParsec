@@ -158,11 +158,11 @@ public class Api {
         return list.map(Ops::concat);
     }
 
-    public static <U> Rule<List<U>> many(Rule<U> inner) {
+    public static <U> Many<U> many(Rule<U> inner) {
         return Many.many(inner);
     }
 
-    public static <U> Rule<List<U>> some(Rule<U> inner) {
+    public static <U> Many<U> some(Rule<U> inner) {
         return Many.some(inner);
     }
 
@@ -183,7 +183,7 @@ public class Api {
         return Strings.c(pattern);
     }
 
-    public static Rule<String> join(Rule<?>... rules) {
+    public static Rule<String> s(Rule<?>... rules) {
         assert rules.length > 1;
 
         var it = rules[0];

@@ -22,7 +22,7 @@ public class Or<T, U> extends Rule<Either<T, U>> {
             case Ok(T res, ParseContext newCtx) -> {
                 return new Ok<>(new Either.Left<>(res), newCtx);
             }
-            case Err(String m, _) -> {
+            case Err(String m, ParseContext ctx2) -> {
                 firstError = m;
                 ctx.addVerboseError(errorMessage);
                 ctx.appendTrace(errorMessage);

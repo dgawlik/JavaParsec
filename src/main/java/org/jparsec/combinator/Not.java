@@ -19,12 +19,12 @@ public class Not extends Rule<Empty> {
     @Override
     public ParseResult<Empty> parse(ParseContext ctx) {
         return switch (inner.parse(ctx)) {
-            case Ok(_, _) -> {
+            case Ok(Object v, ParseContext ctx2) -> {
                 ctx.appendTrace(errorMessage);
                 ctx.addVerboseError(errorMessage);
                 yield new Err<>(errorMessage, ctx);
             }
-            case Err(_, _) -> new Ok<>(new Empty(), ctx);
+            case Err(String msg, ParseContext ctx2) -> new Ok<>(new Empty(), ctx);
         };
     }
 }

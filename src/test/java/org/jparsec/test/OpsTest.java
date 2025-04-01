@@ -24,7 +24,7 @@ class OpsTest {
                 .map(Ops::takeAny);
 
         var result = abc.parse(ParseContext.of("g"));
-        if (result instanceof Ok(Character r, _)) {
+        if (result instanceof Ok(Character r, ParseContext c)) {
             assertEquals('g', (char) r);
         }
 
@@ -44,7 +44,7 @@ class OpsTest {
         ).map(Ops::concat);
 
         var result = cText.parse(ParseContext.of("a or b or c or d"));
-        if (result instanceof Ok(String r, _)) {
+        if (result instanceof Ok(String r, ParseContext c)) {
             assertEquals("a or b or c or d", r);
         } else {
             fail();
@@ -58,7 +58,7 @@ class OpsTest {
         ).map(Ops::concat);
 
         var result = cText.parse(ParseContext.of("ababab"));
-        if (result instanceof Ok(String r, _)) {
+        if (result instanceof Ok(String r, ParseContext c)) {
             assertEquals("ababab", r);
         } else {
             fail();
@@ -73,7 +73,7 @@ class OpsTest {
         ).map(ops(",")::sepJoin);
 
         var result = cText.parse(ParseContext.of("ab,ab,ab"));
-        if (result instanceof Ok(String r, _)) {
+        if (result instanceof Ok(String r, ParseContext c)) {
             assertEquals("ab,ab,ab", r);
         } else {
             fail();
@@ -88,7 +88,7 @@ class OpsTest {
         ).map(ops(4, Integer::sum)::reduce);
 
         var result = numbers.parse(ParseContext.of("1+2+3"));
-        if (result instanceof Ok(Integer r, _)) {
+        if (result instanceof Ok(Integer r, ParseContext c)) {
             assertEquals(10, (int) r);
         } else {
             fail();
@@ -106,7 +106,7 @@ class OpsTest {
         ).map(Ops::flatten).map(Ops::toString);
 
         var result = quotes.parse(ParseContext.of("\"hello\"\"world\""));
-        if (result instanceof Ok(String r, _)) {
+        if (result instanceof Ok(String r, ParseContext c)) {
             assertEquals("helloworld", r);
         } else {
             fail();

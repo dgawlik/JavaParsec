@@ -1,5 +1,6 @@
 import org.jparsec.Ops;
 import org.jparsec.containers.Ok;
+import org.jparsec.containers.ParseContext;
 import org.jparsec.containers.Tuple4;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public void main() {
             Dominik,Gawlik,34
             Guido,"van Rossum",50
             """));
-    if (result instanceof Ok(Table r, _)) {
+    if (result instanceof Ok(Table r, ParseContext ctx)) {
         out.println(r);
     } else {
         out.println(result.errorPrettyPrint());

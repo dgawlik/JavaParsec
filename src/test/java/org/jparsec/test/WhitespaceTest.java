@@ -1,6 +1,7 @@
 package org.jparsec.test;
 
 import org.jparsec.combinator.Whitespace;
+import org.jparsec.containers.Empty;
 import org.jparsec.containers.Ok;
 import org.jparsec.containers.Pair;
 import org.jparsec.containers.ParseContext;
@@ -16,7 +17,7 @@ public class WhitespaceTest {
         var ctx = ParseContext.of("  \t\n");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(_, ParseContext newCtx)) {
+        if (result instanceof Ok(Empty e, ParseContext newCtx)) {
             Assertions.assertEquals(newCtx.content.length(), newCtx.index);
         } else {
             Assertions.fail();
@@ -33,7 +34,7 @@ public class WhitespaceTest {
                 a""");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(_, ParseContext newCtx)) {
+        if (result instanceof Ok(Empty e, ParseContext newCtx)) {
             Assertions.assertEquals(newCtx.content.lastIndexOf("a"), newCtx.index);
         } else {
             Assertions.fail();
@@ -53,7 +54,7 @@ public class WhitespaceTest {
                 a""");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(_, ParseContext newCtx)) {
+        if (result instanceof Ok(Empty e, ParseContext newCtx)) {
             Assertions.assertEquals(newCtx.content.lastIndexOf("a"), newCtx.index);
         } else {
             Assertions.fail();

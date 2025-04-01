@@ -20,7 +20,7 @@ public class Recursive<T> extends Rule<T> {
     @Override
     public ParseResult<T> parse(ParseContext ctx) {
         var result = this.inner.parse(ctx);
-        if (result instanceof Err(_, _)){
+        if (result instanceof Err(String msg, ParseContext ctx2)){
             ctx.addVerboseError(errorMessage);
             ctx.appendTrace(errorMessage);
         }

@@ -26,7 +26,7 @@ class TimesTest {
         );
 
         var result = date.parse(ParseContext.of("12/07/2025"));
-        if (result instanceof Ok(Tuple5(String day, _, String month, _, String year), _)){
+        if (result instanceof Ok(Tuple5(String day, Character c1, String month, Character c2, String year), ParseContext ctx)){
             Assertions.assertEquals("12/07/2025", day+"/"+month+"/"+year);
         }
     }
