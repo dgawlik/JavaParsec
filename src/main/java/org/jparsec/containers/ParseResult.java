@@ -21,6 +21,10 @@ public sealed interface ParseResult<T> permits Ok, Err {
         throw new IllegalStateException("Cannot access result");
     }
 
+    default boolean isOk() {
+        return this instanceof Ok;
+    }
+
     default String error() {
         if (this instanceof Err(String msg, ParseContext ctx2 )){
             return msg;
