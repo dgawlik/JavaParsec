@@ -15,16 +15,17 @@ import static org.jparsec.Api.*
 Matches any single character.
 
 ```java
-var r1 = any().parse("ab");
-if (r1 instanceof Ok(Character c, ParseContext ctx)) {
-    // c == 'a'
-    // ctx.index == 1
+var result = anyChar().parse("a");
+if (result instanceof Ok(Character c, ParseContext ctx)){
+    assert (char) c == 'a';
+    assert (int) ctx.index == 1;
 }
 
-var r2 = any().parse("");
-if (r2 instanceof Err(String msg, _)) {
-    // msg == "unexpected end of stream"
-}
+var err = anyChar().parse("");
+if (err instanceof Err(String msg, ParseContext ctx)) {
+    assert "unexpected end of stream".equals(msg);
+    assert (int) ctx.index == 0;
+}    
 ```
 
 
@@ -34,28 +35,28 @@ if (r2 instanceof Err(String msg, _)) {
 Matches single occurrence of any of specified characters.
 
 ```java
-var r = anyOf('a', 'b').parseThrow("a");
-// r == 'a'
-var r2 = anyOf('a', 'b').parseThrow("b");
-// r2 == 'b'
-var r3 = anyOf('a', 'b').parseThrow("c");
-// throws ParseException: a,b could not be matched
+var r1 = anyOf('a', 'b').parse("a");
+assert r1.ok() == 'a';
+
+var r2 = anyOf('a', 'b').parse("b");
+assert r2.ok() == 'b';
+
+var r3 = anyOf('a', 'b').parse("c");
+assert !r3.isOk()
 ```
-
-
 
 #### whitespace()
 
 Matches single whitespace character.
 
 ```java
-var r = whitespace().parseMaybe(" ");
+var r1 = whitespace().parseMaybe(" ");
 var r2 = whitespace().parseMaybe("\t");
 var r3 = whitespace().parseMaybe("\n");
 
-// r1.isPresent() == true
-// r2.isPresent() == true
-// r3.isPresent() == true
+assert r1.isPresent() == true;
+assert r2.isPresent() == true;
+assert r3.isPresent() == true;
 ```
 
 
@@ -67,11 +68,9 @@ Matches single digit character including zero.
 ```java
 for (int i=0;i<10;i++){
     var text = String.valueOf(i);
-    var parser = digit()
-            .map(Ops::toString)
-            .map(Integer::valueOf);
+    var parser = digit().s().map(Integer::valueOf);
     var num = parser.parseThrow(text);
-    // num == i
+    assert (int) num == i;
 }
 
 digit().parseThrow("a"); // ParseException
@@ -83,16 +82,17 @@ digit().parseThrow("a"); // ParseException
 
 Matches single digit excluding zero.
 
-<pre class="language-java"><code class="lang-java"><strong>var r1 = nonZeroDigit().parse("1");
-</strong>if (r1 instanceof Ok(Character c, _)){
-    // r1 == '1'
+```java
+var r1 = nonZeroDigit().parse("1");
+if (r1 instanceof Ok(Character c, ParseContext ctx)){
+    assert (char) c == '1';
 }
 
 var r2 = nonZeroDigit().parse("0");
-if (r2 instanceof Err(String msg, _)) {
-    // msg == "1,2,3,4,5,6,7,8,9 could not be matched"
+if (r2 instanceof Err(String msg, ParseContext ctx)) {
+    assert "expected non zero digit".equals(msg);
 }
-</code></pre>
+```
 
 
 
@@ -101,13 +101,13 @@ if (r2 instanceof Err(String msg, _)) {
 Matches single alphabetic character.
 
 ```java
-var r = alpha().parseMaybe("A");
-var r2 = alpha().parseMaybe("z");
-var e = alpha().parseMaybe("0");
+var r = letter().parseMaybe("A");
+var r2 = letter().parseMaybe("z");
+var e = letter().parseMaybe("0");
 
-// r.isPresent() == true
-// r2.isPresent() == true
-// e.isPresent() == false
+assert r.isPresent() == true;
+assert r2.isPresent() == true;
+assert e.isPresent() == false;
 ```
 
 
@@ -129,8 +129,8 @@ var e = alphaNum().parseThrow("@"); // ParseException
 Matches single lowercase alphabetic character.
 
 ```java
-lower().parseMaybe("a").isPresent() == true
-lower().parseMaybe("A").isEmpty() == true
+assert lower().parseMaybe("a").isPresent() == true;
+assert lower().parseMaybe("A").isEmpty() == true;
 ```
 
 
@@ -140,8 +140,8 @@ lower().parseMaybe("A").isEmpty() == true
 Matches single uppercase alphabetic character.
 
 ```java
-upper().parseMaybe("A").isPresent() == true
-upper().parseMaybe("a").isEmpty() == true
+assert upper().parseMaybe("A").isPresent() == true;
+assert upper().parseMaybe("a").isEmpty() == true;
 ```
 
 
@@ -154,9 +154,10 @@ Matches supplied predicate on single character.
 Predicate<Character> evenDigit =
         (Character c) -> Character.digit(c, 10) % 2 == 0;
 
-var r = satisfy(evenDigit).parseThrow("2");
-// r == '2'
-var e = satisfy(evenDigit).parseThrow("1"); // ParseException
+var r = satisfy(evenDigit).parse("2");
+assert (char) r.ok() == '2';
+var e = satisfy(evenDigit).parse("1");
+assert e.isOk() == false;
 ```
 
 
@@ -168,12 +169,12 @@ Matches single character if is between start and end inclusive.
 ```java
 for (char i = 'a'; i <= 'f'; i++){
     var c = range('a', 'f').parseThrow(""+i);
-    // c == i
+    assert (char) c == i;
 }
 
 var e = range('a', 'f').parse("g");
-if (e instanceof Err(String msg, _)) {
-    // msg == "a,b,c,d,e,f could not be matched"
+if (e instanceof Err(String msg, ParseContext ctx)) {
+    "expected 'a'..'f'".equals(msg);
 }
 ```
 
@@ -185,9 +186,7 @@ Matches if single character if none of the specified.
 
 ```java
 var e = noneOf('a', 'b').parse("a");
-if (e instanceof Err(String msg, _)){
-    // msg == "none of a,b should be matched"
-}
+assert "not expecting 'a','b'".equals(e.error());
 ```
 
 
@@ -209,10 +208,10 @@ Matches if any of the inner rule matches in this order.
 Returns Either\<T, U> or ChoiceN\<T, U, W, ..., G>
 
 ```java
- var parser = choice(
-       digit().map(Ops::toString),
-       anyOf('a', 'b', 'c').map(Ops::toString),
-       string("Hello")
+var parser = choice(
+    digit().s(),
+    anyOf('a', 'b', 'c').s(),
+    c("Hello")
 ).map(Ops::takeAny);
 
 var r1 = parser.parseThrow("a");
@@ -242,15 +241,11 @@ Returns Pair\<T, U> or TupleN\<T, U, W, ..., G>
 
 ```java
  var identifier = seq(
-       alpha().or(
-               anyOf('$', '_')
-       ).map(Ops::takeAny).map(Ops::toString),
-       many(
-               alphaNum().or(
-                       anyOf('$', '_')
-               ).map(Ops::takeAny)
-       ).map(Ops::toString)
-).map(Ops::concat);
+    any(letter(), anyOf('$', '_')),
+    many(
+        any(alphaNum(), anyOf('$', '_'))
+    ).s()
+).s();
 
 var r1 = identifier.parseThrow("$id_1");
 var r2 = identifier.parseThrow("_id223$");
@@ -266,7 +261,7 @@ Matches zero or more occurrences of inner parser. Always succeeds.
 Returns Rule\<List\<U>>
 
 ```java
-var parser = many(anyOf('a', 'b')).map(Ops::toString);
+var parser = many(anyOf('a', 'b')).s();
 
 var r = parser.parse("aabbababcccc");
 if (r instanceof Ok(String r2, ParseContext ctx)){
@@ -284,11 +279,11 @@ Matches one or more occurrences of inner parser, fails on zero occurrences.
 Returns Rule\<List\<U>>
 
 ```java
-var parser = some(anyOf('a', 'b')).map(Ops::toString);
+var parser = some(anyOf('a', 'b')).s();
 
 var e = parser.parse("ccccc");
-if (e instanceof Err(String msg, _)) {
-    // msg == "a,b could not be matched"
+if (e instanceof Err(String msg, ParseContext ctx)) {
+    assert "expected 'a','b'".equals(msg);
 }
 ```
 
@@ -304,13 +299,13 @@ Returns Rule\<List\<U>>
 
 ```java
 var year = times(digit(), 4)
-       .map(Ops::toString).map(Integer::valueOf);
+       .s().map(Integer::valueOf);
 
 var month = times(digit(), 2)
-        .map(Ops::toString).map(Integer::valueOf);
+        .s().map(Integer::valueOf);
 
 var day = times(digit(), 2)
-        .map(Ops::toString).map(Integer::valueOf);
+        .s().map(Integer::valueOf);
 
 var date = seq(
         year,
@@ -345,16 +340,28 @@ assert optA.parseMaybe("a").get().isPresent();
 
 
 
-#### string(String pattern)
+#### c(String pattern)
 
-Matches exactly the pattern.
+Captures exactly the pattern.
 
 Returns Rule\<String>
 
 ```java
-var world = string("world");
+var world = c("world");
 assert world.parseMaybe("world").isPresent();
 assert world.parseMaybe("worl").isEmpty();
+```
+
+
+
+#### c(Character chr)
+
+Captures exactly the character
+
+```java
+var world = c('a');
+assert world.parseMaybe("a").isPresent();
+assert world.parseMaybe("b").isEmpty();
 ```
 
 
@@ -384,17 +391,12 @@ var ws = spaces(Whitespace.Config.defaults()
         .withSinglelineComment("//")
         .withMultilineComment("/*", "*/"));
 
-var line = choice(string("//"), string("\n"), any())
-    .takeWhile(p -> {
-    return p.three().isPresent();
-        })
-                .map(lst -> lst.stream()
-                        .map(e -> e.three().get()).toList())
-                        .map(Ops::toString)
-        .failIf(String::isEmpty, "stop condition");
+var line = choice(c("//"), c("\n"), anyChar().s())
+    .takeWhile(p -> p.three().isPresent())
+    .map(lst -> lst.stream().map(e -> e.three().get()).collect(Collectors.joining()))
+    .failIf(String::isEmpty, "stop condition");
 
 var lexeme = lexeme(line, ws);
-
 
 var text = ws.dropLeft(some(lexeme));
 
@@ -422,7 +424,7 @@ Acts as a composite of inner rule and trailing whitespace. While inner rule must
 Returns Rule\<T>
 
 ```java
-var trim = lexeme(string("hello"), spaces(Whitespace.Config.defaults()))
+var trim = lexeme(c("hello"), spaces(Whitespace.Config.defaults()))
 trim.parseMaybe(input("hello  ")).get().equals("hello")
 ```
 
@@ -435,8 +437,8 @@ Takes zero or more of _inner_ rule separated by _sep_ rule.
 Returns Rule\<List\<T>>
 
 ```java
-var commaSep = sepBy(anyOf('a', 'b', 'c'), anyOf(',')).map(Ops::toString)
-commaSep.parse(input("a,b,c")).get().equals("abc")
+var commaSep = sepBy(anyOf('a', 'b', 'c'), c(',')).s();
+assert "abc".equals(commaSep.parseThrow("a,b,c")
 ```
 
 
@@ -448,11 +450,37 @@ Fails if inner rule matches.&#x20;
 Returns Rule\<Empty>
 
 ```java
-var notA = not(anyOf('a'))
+var notA = not(c('a'))
 notA.parseMaybe("a").isPresent() == false
 ```
 
 
+
+#### rule1.dropLeft(Rule\<U> rule2)
+
+Asserts both rules are matched but discards the first one.
+
+```java
+var trim = many(c(' ')).dropLeft(c("hello"));
+assert trim.parse("   hello").ok().equals("hello");
+```
+
+
+
+#### rule1.dropRight(Rule\<U> rule2)
+
+Asserts both rules are matched but discards the last one.
+
+```java
+var trimComment = c("hello").dropRight(seq(many(c(' ')), c("//"), many(noneOf('\n'))));
+var result = trimComment.parse("hello  // this is a comment\n");
+if (result instanceof Ok(String r, ParseContext ctx)){
+        assert r.equals("hello");
+        assert ctx.index == 27;
+} else {
+        throw new RuntimeException("Failed");
+}
+```
 
 #### recursive()
 
@@ -462,13 +490,17 @@ Returns Recursive\<T>
 
 ```java
 sealed interface Expression {
-    record Value(Integer val) implements Expression {}
-    record Parens(Expression inner) implements Expression {}
+        record Value(Integer val) implements Expression {}
+        record Parens(Expression inner) implements Expression {}
 }
 
 Recursive<Expression> expr = recursive()
-var number = some(digit()).map(Ops::toString).map(Integer::valueOf).map(Value::new)
-expr.set(number.or(seq(anyOf('('), expr, anyOf(')')).map(Ops::takeMiddle).map(Parens::new))
+var number = some(digit()).s().map(Integer::valueOf).map(Value::new)
+expr.set(number.or(
+        seq(anyOf('('), expr, anyOf(')'))
+                .map(Ops::takeMiddle)
+                .map(Parens::new)
+)
 
 expr.parsseMaybe("((123))").isPresent() == true
 ```
@@ -484,12 +516,12 @@ Returns Rule\<U>
 ```java
 var listElems = many(seq(
     nl(), 
-    string("- "), 
-    some(noneOf('\n').).map(Ops::toString)
+    c("- "), 
+    some(noneOf('\n')).s()
     ).map(Ops::takeLast))
 Tuple3<String, Character, List<String>> group = seq(
-    some(noneOf('\n', ':')).map(Ops::toString), 
-    anyOf(':'), 
+    some(noneOf('\n', ':')).s(),
+    c(':'), 
     indent(listElems, "  "))
     
 group.parseMaybe(input("""
@@ -497,6 +529,28 @@ header:
   - one
   - two
 """)).isPresent() == true
+```
+
+#### rule.s()
+
+Concats seqs, lists of chars and lists of strings into single string.
+
+```java
+var concat = seq(c('a'), c("bb"), many(c('c'))).s();
+
+assert concat.parse("abbcccc").ok().equals("abbcccc");
+```
+
+
+
+#### any(Rule\<T>... rules)
+
+Takes any of the rules matching. Rules have to be uniform in type.
+
+```java
+var letterOrDigit = many(any(digit(), letter())).s();
+
+assert letterOrDigit.parse("a1b2").isOk();
 ```
 
 
@@ -512,9 +566,44 @@ See [#indent-rule-less-than-u-greater-than-inner-string-pattern](all-combinators
 In normal mode parser takes only part of text that is needed. Combining pattern with this rule asserts exhaustion of stream.
 
 ```java
-var singleA = seq(anyOf('a'), eos())
-singleA.parseMayve(input("aaa")).isPresent == false
+var singleA = seq(c('a'), eos())
+singleA.parseMayve("aaa").isPresent() == false
 ```
 
 
 
+#### rule.map(Function\<T, U> fn)
+
+Returns rule wrapped and transformed with given function.
+
+```java
+var i = some(digit()).s().map(Integer::valueOf);
+
+assert (int) i.parse("1").ok() == 1;
+```
+
+
+
+#### rule.failIf(String errorMsg, Predicate\<T> fn)
+
+Returns rule wrapped that tests give predicate and fails with error message;
+
+```java
+var even = some(digit()).s()
+    .map(Integer::valueOf)
+    .failIf(i -> i % 2 != 0, "not even");
+
+assert even.parse("123").error().equals("not even");
+```
+
+
+
+#### rule.takeWhile(Predicate\<T> fn)
+
+Consumes input until predicate is not met.
+
+```java
+var notB = anyChar().takeWhile(c -> c != 'b').map(Ops::toString);
+
+assert notB.parse("adcb").ok().equals("adc");
+```
