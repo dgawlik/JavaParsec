@@ -1,17 +1,17 @@
 package org.jparsec.combinator;
 
 import org.jparsec.Api;
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.*;
 
-public class Newline extends Rule<Character> {
+public class Newline extends Matcher<Character> {
 
     public Newline() {
         super("error parsing newline");
     }
 
     @Override
-    public ParseResult<Character> parse(ParseContext ctx) {
+    public MatchResult<Character> parse(Context ctx) {
         if (Api.anyOf('\n').parse(ctx) instanceof Err e) {
             ctx.appendTrace(e.error());
             ctx.addVerboseError(e.error());
@@ -24,11 +24,11 @@ public class Newline extends Rule<Character> {
 
         if (ctx.indentLevel > 0) {
             int indentCount = 0;
-            ParseContext ctxIt = ctx;
+            Context ctxIt = ctx;
             outer:
             while (true) {
                 switch (Api.c(ctx.indentPattern).parse(ctxIt)) {
-                    case Ok(String s, ParseContext newCtx) -> {
+                    case Ok(String s, Context newCtx) -> {
                         ctxIt = newCtx;
                         indentCount++;
                     }

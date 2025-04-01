@@ -35,8 +35,8 @@ public class CsvTest {
                 firstName,lastName,age
                 Dominik,"#C,Gawlik",34/""";
 
-        var result = csv.parse(ParseContext.of(text));
-        if (result instanceof Ok(List<List<String>> r, ParseContext ctx)){
+        var result = csv.parse(Context.of(text));
+        if (result instanceof Ok(List<List<String>> r, Context ctx)){
             Assertions.assertTrue(true);
         } else {
             fail();
@@ -58,12 +58,12 @@ public class CsvTest {
         };
     }
 
-    private ParseResult<List<List<String>>> checkSameNumberOfColumns(ParseResult<List<List<String>>> pr) {
+    private MatchResult<List<List<String>>> checkSameNumberOfColumns(MatchResult<List<List<String>>> pr) {
         switch (pr) {
             case Err e -> {
                 return e;
             }
-            case Ok(List<List<String>> listOfLists, ParseContext pc) -> {
+            case Ok(List<List<String>> listOfLists, Context pc) -> {
                 if (listOfLists.isEmpty()) {
                     return new Ok(List.of(), pc);
                 }

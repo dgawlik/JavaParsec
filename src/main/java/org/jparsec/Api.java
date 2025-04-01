@@ -74,100 +74,100 @@ public class Api {
                 "not expecting " + charsMsg, "none of " + charsMsg);
     }
 
-    public static <T, U> Rule<Either<T, U>> choice(Rule<T> c1, Rule<U> c2) {
+    public static <T, U> Matcher<Either<T, U>> choice(Matcher<T> c1, Matcher<U> c2) {
         return Choice.choice(c1, c2);
     }
 
-    public static <T, U, W> Rule<Choice3<T, U, W>> choice(Rule<T> c1, Rule<U> c2, Rule<W> c3) {
+    public static <T, U, W> Matcher<Choice3<T, U, W>> choice(Matcher<T> c1, Matcher<U> c2, Matcher<W> c3) {
         return Choice.choice(c1, c2, c3);
     }
 
-    public static <T, U, W, Z> Rule<Choice4<T, U, W, Z>> choice(Rule<T> c1, Rule<U> c2,
-                                                                Rule<W> c3, Rule<Z> c4) {
+    public static <T, U, W, Z> Matcher<Choice4<T, U, W, Z>> choice(Matcher<T> c1, Matcher<U> c2,
+                                                                   Matcher<W> c3, Matcher<Z> c4) {
         return Choice.choice(c1, c2, c3, c4);
     }
 
-    public static <T, U, W, Z, X> Rule<Choice5<T, U, W, Z, X>> choice(Rule<T> c1, Rule<U> c2,
-                                                                      Rule<W> c3, Rule<Z> c4,
-                                                                      Rule<X> c5) {
+    public static <T, U, W, Z, X> Matcher<Choice5<T, U, W, Z, X>> choice(Matcher<T> c1, Matcher<U> c2,
+                                                                         Matcher<W> c3, Matcher<Z> c4,
+                                                                         Matcher<X> c5) {
         return Choice.choice(c1, c2, c3, c4, c5);
     }
 
-    public static <T, U, W, Z, X, G> Rule<Choice6<T, U, W, Z, X, G>> choice(Rule<T> c1, Rule<U> c2,
-                                                                            Rule<W> c3, Rule<Z> c4,
-                                                                            Rule<X> c5, Rule<G> c6) {
+    public static <T, U, W, Z, X, G> Matcher<Choice6<T, U, W, Z, X, G>> choice(Matcher<T> c1, Matcher<U> c2,
+                                                                               Matcher<W> c3, Matcher<Z> c4,
+                                                                               Matcher<X> c5, Matcher<G> c6) {
         return Choice.choice(c1, c2, c3, c4, c5, c6);
     }
 
-    public static <T, U, W, Z, X, G, H> Rule<Choice7<T, U, W, Z, X, G, H>> choice(Rule<T> c1, Rule<U> c2,
-                                                                                  Rule<W> c3, Rule<Z> c4,
-                                                                                  Rule<X> c5, Rule<G> c6,
-                                                                                  Rule<H> c7) {
+    public static <T, U, W, Z, X, G, H> Matcher<Choice7<T, U, W, Z, X, G, H>> choice(Matcher<T> c1, Matcher<U> c2,
+                                                                                     Matcher<W> c3, Matcher<Z> c4,
+                                                                                     Matcher<X> c5, Matcher<G> c6,
+                                                                                     Matcher<H> c7) {
         return Choice.choice(c1, c2, c3, c4, c5, c6, c7);
     }
 
-    public static <T, U> Seq.SeqX<Pair<T, U>> seq(Rule<T> one, Rule<U> two) {
+    public static <T, U> Seq.SeqX<Pair<T, U>> seq(Matcher<T> one, Matcher<U> two) {
         return Seq.seq(one, two);
     }
 
-    public static <T, U, W> Seq.SeqX<Tuple3<T, U, W>> seq(Rule<T> one, Rule<U> two, Rule<W> three) {
+    public static <T, U, W> Seq.SeqX<Tuple3<T, U, W>> seq(Matcher<T> one, Matcher<U> two, Matcher<W> three) {
         return Seq.seq(one, two, three);
     }
 
-    public static <T, U, W, Z> Seq.SeqX<Tuple4<T, U, W, Z>> seq(Rule<T> one, Rule<U> two,
-                                                            Rule<W> three, Rule<Z> four) {
+    public static <T, U, W, Z> Seq.SeqX<Tuple4<T, U, W, Z>> seq(Matcher<T> one, Matcher<U> two,
+                                                                Matcher<W> three, Matcher<Z> four) {
         return Seq.seq(one, two, three, four);
     }
 
-    public static <T, U, W, Z, Y> Seq.SeqX<Tuple5<T, U, W, Z, Y>> seq(Rule<T> one, Rule<U> two,
-                                                                  Rule<W> three, Rule<Z> four,
-                                                                  Rule<Y> five) {
+    public static <T, U, W, Z, Y> Seq.SeqX<Tuple5<T, U, W, Z, Y>> seq(Matcher<T> one, Matcher<U> two,
+                                                                      Matcher<W> three, Matcher<Z> four,
+                                                                      Matcher<Y> five) {
         return Seq.seq(one, two, three, four, five);
     }
 
-    public static <T, U, W, Z, Y, X> Seq.SeqX<Tuple6<T, U, W, Z, Y, X>> seq(Rule<T> one, Rule<U> two,
-                                                                            Rule<W> three, Rule<Z> four,
-                                                                            Rule<Y> five, Rule<X> six) {
+    public static <T, U, W, Z, Y, X> Seq.SeqX<Tuple6<T, U, W, Z, Y, X>> seq(Matcher<T> one, Matcher<U> two,
+                                                                            Matcher<W> three, Matcher<Z> four,
+                                                                            Matcher<Y> five, Matcher<X> six) {
         return Seq.seq(one, two, three, four, five, six);
     }
 
-    public static <T, U, W, Z, Y, X, G> Seq.SeqX<Tuple7<T, U, W, Z, Y, X, G>> seq(Rule<T> one, Rule<U> two,
-                                                                              Rule<W> three, Rule<Z> four,
-                                                                              Rule<Y> five, Rule<X> six,
-                                                                              Rule<G> seven) {
+    public static <T, U, W, Z, Y, X, G> Seq.SeqX<Tuple7<T, U, W, Z, Y, X, G>> seq(Matcher<T> one, Matcher<U> two,
+                                                                                  Matcher<W> three, Matcher<Z> four,
+                                                                                  Matcher<Y> five, Matcher<X> six,
+                                                                                  Matcher<G> seven) {
         return Seq.seq(one, two, three, four, five, six, seven);
     }
 
     @SafeVarargs
-    public static <U> Rule<U> any(Rule<U>... rules) {
-        assert rules.length > 1;
+    public static <U> Matcher<U> any(Matcher<U>... matchers) {
+        assert matchers.length > 1;
 
-        var it = rules[0];
-        for (int i = 1; i < rules.length; i++) {
-            it = it.any(rules[i]);
+        var it = matchers[0];
+        for (int i = 1; i < matchers.length; i++) {
+            it = it.any(matchers[i]);
         }
 
         return it;
     }
 
-    public static <U> Many<U> many(Rule<U> inner) {
+    public static <U> Many<U> many(Matcher<U> inner) {
         return Many.many(inner);
     }
 
-    public static <U> Many<U> some(Rule<U> inner) {
+    public static <U> Many<U> some(Matcher<U> inner) {
         return Many.some(inner);
     }
 
 
-    public static <U> Times<U> times(Rule<U> inner, int times) {
+    public static <U> Times<U> times(Matcher<U> inner, int times) {
         return Times.times(inner, times);
     }
 
-    public static <U> Times<U> times(Rule<U> inner, int from, int to) {
+    public static <U> Times<U> times(Matcher<U> inner, int from, int to) {
         return Times.times(inner, from, to);
     }
 
-    public static <T> Opt<T> opt(Rule<T> inner) {
+    public static <T> Opt<T> opt(Matcher<T> inner) {
         return Opt.opt(inner);
     }
 
@@ -175,15 +175,15 @@ public class Api {
         return Strings.c(pattern);
     }
 
-    public static Rule<String> s(Rule<?>... rules) {
-        assert rules.length > 1;
+    public static Matcher<String> s(Matcher<?>... matchers) {
+        assert matchers.length > 1;
 
-        var it = rules[0];
-        for (int i = 1; i < rules.length; i++) {
-            it = it.seq(rules[i]).map(p -> p.first().toString() + p.second().toString());
+        var it = matchers[0];
+        for (int i = 1; i < matchers.length; i++) {
+            it = it.seq(matchers[i]).map(p -> p.first().toString() + p.second().toString());
         }
 
-        return (Rule<String>) it;
+        return (Matcher<String>) it;
     }
 
     public static Str stringIgnoreCase(String pattern) {
@@ -194,15 +194,15 @@ public class Api {
         return Whitespace.spaces(config);
     }
 
-    public static <T> Lexeme<T> lexeme(Rule<T> inner, Whitespace ws) {
+    public static <T> Lexeme<T> lexeme(Matcher<T> inner, Whitespace ws) {
         return Lexeme.lexeme(inner, ws);
     }
 
-    public static <V, U> Rule<List<V>> sepBy(Rule<V> inner, Rule<U> sep) {
+    public static <V, U> Matcher<List<V>> sepBy(Matcher<V> inner, Matcher<U> sep) {
         return Sep.sepBy(inner, sep);
     }
 
-    public static <T> Rule<Empty> not(Rule<T> inner) {
+    public static <T> Matcher<Empty> not(Matcher<T> inner) {
         return new Not(inner);
     }
 
@@ -210,7 +210,7 @@ public class Api {
         return new Recursive<>();
     }
 
-    public static <T> Indent<T> indent(Rule<T> inner, String pattern) {
+    public static <T> Indent<T> indent(Matcher<T> inner, String pattern) {
         return new Indent<>(inner, pattern);
     }
 
@@ -218,8 +218,8 @@ public class Api {
         return new Newline();
     }
 
-    public static ParseContext input(String text) {
-        return ParseContext.of(text);
+    public static Context input(String text) {
+        return Context.of(text);
     }
 
     public static Eos eos() {

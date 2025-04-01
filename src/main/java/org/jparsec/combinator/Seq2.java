@@ -1,37 +1,37 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.*;
 
-public class Seq2<T, U> extends Rule<Pair<T, U>> {
+public class Seq2<T, U> extends Matcher<Pair<T, U>> {
 
-    private final Rule<T> that;
-    private final Rule<U> other;
+    private final Matcher<T> that;
+    private final Matcher<U> other;
 
-    public Seq2(Rule<T> that, Rule<U> other) {
+    public Seq2(Matcher<T> that, Matcher<U> other) {
         super("error in sequence");
         this.that = that;
         this.other = other;
     }
 
-    public Rule<String> s() {
+    public Matcher<String> s() {
         return this.map(p -> p.s(""));
     }
 
 
     @Override
-    public ParseResult<Pair<T, U>> parse(ParseContext ctx) {
+    public MatchResult<Pair<T, U>> parse(Context ctx) {
         var ctxIt = ctx;
         T t = null;
         U u = null;
 
 
         switch (that.parse(ctxIt)) {
-            case Ok(T val1, ParseContext newCtx) -> {
+            case Ok(T val1, Context newCtx) -> {
                 ctxIt = newCtx;
                 t = val1;
             }
-            case Err(String msg, ParseContext newCtx) -> {
+            case Err(String msg, Context newCtx) -> {
                 newCtx.addVerboseError(errorMessage);
                 newCtx.appendTrace(errorMessage);
                 return new Err<>(customError.orElse(msg), newCtx);
@@ -39,11 +39,11 @@ public class Seq2<T, U> extends Rule<Pair<T, U>> {
         }
 
         switch (other.parse(ctxIt)) {
-            case Ok(U val2, ParseContext newCtx) -> {
+            case Ok(U val2, Context newCtx) -> {
                 ctxIt = newCtx;
                 u = val2;
             }
-            case Err(String msg, ParseContext newCtx) -> {
+            case Err(String msg, Context newCtx) -> {
                 newCtx.addVerboseError(errorMessage);
                 newCtx.appendTrace(errorMessage);
                 return new Err<>(customError.orElse(msg), newCtx);

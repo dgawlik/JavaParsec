@@ -5,17 +5,17 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.function.Function;
 
-public sealed interface ParseResult<T> permits Ok, Err {
+public sealed interface MatchResult<T> permits Ok, Err {
 
-    default <U> ParseResult<U> map(Function<T, U> fn) {
+    default <U> MatchResult<U> map(Function<T, U> fn) {
         return switch (this) {
             case Err<T> e -> (Err<U>) e;
-            case Ok<T>(T value, ParseContext ctx) -> new Ok<>(fn.apply(value), ctx);
+            case Ok<T>(T value, Context ctx) -> new Ok<>(fn.apply(value), ctx);
         };
     }
 
     default T ok() {
-        if (this instanceof Ok(T value, ParseContext ctx)) {
+        if (this instanceof Ok(T value, Context ctx)) {
             return value;
         }
         throw new IllegalStateException("Cannot access result");
@@ -26,14 +26,14 @@ public sealed interface ParseResult<T> permits Ok, Err {
     }
 
     default String error() {
-        if (this instanceof Err(String msg, ParseContext ctx2 )){
+        if (this instanceof Err(String msg, Context ctx2 )){
             return msg;
         }
         throw new IllegalStateException("Cannot access error on ok");
     }
 
     default String errorTrace() {
-        if (this instanceof Err(String err, ParseContext ctx)) {
+        if (this instanceof Err(String err, Context ctx)) {
             var baos = new ByteArrayOutputStream();
             var out = new PrintWriter(baos);
             var nestCount = 0;
@@ -61,10 +61,10 @@ public sealed interface ParseResult<T> permits Ok, Err {
         var out = new PrintWriter(baos);
 
         switch (this) {
-            case Ok(T v, ParseContext ctx) -> {
+            case Ok(T v, Context ctx) -> {
                 ctx.allErrors.forEach(out::println);
             }
-            case Err(String m, ParseContext ctx) -> {
+            case Err(String m, Context ctx) -> {
                 ctx.allErrors.forEach(out::println);
             }
         }
@@ -75,7 +75,7 @@ public sealed interface ParseResult<T> permits Ok, Err {
 
     default String errorPrettyPrint() {
 
-        if (this instanceof Err(String error, ParseContext ctx)) {
+        if (this instanceof Err(String error, Context ctx)) {
             List<String> lines = ctx.content.lines().toList();
 
             var baos = new ByteArrayOutputStream();

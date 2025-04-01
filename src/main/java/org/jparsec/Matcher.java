@@ -13,37 +13,37 @@ import static org.jparsec.Api.eos;
 import static org.jparsec.Api.input;
 
 
-public abstract class Rule<T> {
+public abstract class Matcher<T> {
 
-    public abstract ParseResult<T> parse(ParseContext ctx);
+    public abstract MatchResult<T> parse(Context ctx);
 
-    public ParseResult<T> parse(String text) {
+    public MatchResult<T> parse(String text) {
         return parse(Api.input(text));
     }
 
     public T parseThrow(String text) {
         return switch (parse(Api.input(text))) {
-            case Ok(T val, ParseContext ctx) -> val;
+            case Ok(T val, Context ctx) -> val;
             case Err e -> throw new ParseException(e.error());
         };
     }
 
-    public Optional<T> parseMaybe(ParseContext ctx) {
+    public Optional<T> parseMaybe(Context ctx) {
         return switch (parse(ctx)) {
-            case Ok(T val, ParseContext ctx2) -> Optional.of(val);
+            case Ok(T val, Context ctx2) -> Optional.of(val);
             case Err e -> Optional.empty();
         };
     }
 
     public Optional<T> parseMaybe(String text) {
         return switch (parse(input(text))) {
-            case Ok(T val, ParseContext ctx) -> Optional.of(val);
+            case Ok(T val, Context ctx) -> Optional.of(val);
             case Err e -> Optional.empty();
         };
     }
 
     public void assertParses(String text) {
-        if (this.dropRight(eos()).parse(input(text)) instanceof Err(String msg, ParseContext ctx2)) {
+        if (this.dropRight(eos()).parse(input(text)) instanceof Err(String msg, Context ctx2)) {
             throw new ParseException(msg);
         }
     }
@@ -54,7 +54,7 @@ public abstract class Rule<T> {
         }
     }
 
-    public void assertEquals(ParseContext input, T value) {
+    public void assertEquals(Context input, T value) {
         var result = this.parseMaybe(input);
         if (result.isEmpty()) {
             throw new ParseException("could not parse");
@@ -68,55 +68,55 @@ public abstract class Rule<T> {
     public Optional<String> customError;
     public Optional<String> internalDescription;
 
-    public Rule(String errorMessage) {
+    public Matcher(String errorMessage) {
         this.errorMessage = errorMessage;
         this.customError = Optional.empty();
         this.internalDescription = Optional.empty();
     }
 
-    public Rule<T> setErrorMessage(String message) {
+    public Matcher<T> setErrorMessage(String message) {
         this.customError = Optional.of(message);
         return this;
     }
 
-    public Rule<T> setInternalDescription(String message) {
+    public Matcher<T> setInternalDescription(String message) {
         this.internalDescription = Optional.of(message);
         return this;
     }
 
-    public <U> Rule<U> map(Function<T, U> fn) {
+    public <U> Matcher<U> map(Function<T, U> fn) {
         return new Map<>(this, fn);
     }
 
-    public Rule<T> failIf(Predicate<T> fn, String errorMessage) {
+    public Matcher<T> failIf(Predicate<T> fn, String errorMessage) {
         return new FailIf<>(this, fn, errorMessage);
     }
 
-    public <U> Rule<U> mapOrError(Function<ParseResult<T>, ParseResult<U>> fn) {
+    public <U> Matcher<U> mapOrError(Function<MatchResult<T>, MatchResult<U>> fn) {
         return new MapOrFail<>(this, fn);
     }
 
-    public Rule<List<T>> takeWhile(Predicate<T> fn) {
+    public Matcher<List<T>> takeWhile(Predicate<T> fn) {
         return new TakeWhile<>(this, fn);
     }
 
-    public <U> Rule<Either<T, U>> or(Rule<U> other) {
+    public <U> Matcher<Either<T, U>> or(Matcher<U> other) {
         return new Or<>(this, other);
     }
 
-    public Rule<T> any(Rule<T> other) {
+    public Matcher<T> any(Matcher<T> other) {
         return this.or(other).map(e -> e.left().isPresent() ? e.left().get() : e.right().get());
     }
 
-    public <U> Rule<Pair<T, U>> seq(Rule<U> other) {
+    public <U> Matcher<Pair<T, U>> seq(Matcher<U> other) {
         return new Seq2<>(this, other);
     }
 
-    public <U> Rule<U> dropLeft(Rule<U> other) {
+    public <U> Matcher<U> dropLeft(Matcher<U> other) {
         return new DropLeft<>(this, other);
     }
 
-    public <U> Rule<T> dropRight(Rule<U> other) {
+    public <U> Matcher<T> dropRight(Matcher<U> other) {
         return new DropRight<>(this, other);
     }
 }

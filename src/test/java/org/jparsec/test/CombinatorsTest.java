@@ -21,10 +21,10 @@ public class CombinatorsTest {
                         .map(c -> "" + c)
                         .collect(Collectors.joining()));
 
-        var ctx = ParseContext.of("aaab");
+        var ctx = Context.of("aaab");
         var result = takeA.parse(ctx);
 
-        if (result instanceof Ok(String r, ParseContext newCtx)) {
+        if (result instanceof Ok(String r, Context newCtx)) {
             Assertions.assertEquals("aaa", r);
             Assertions.assertEquals(newCtx.content.indexOf("b"), newCtx.index);
         }
@@ -34,24 +34,24 @@ public class CombinatorsTest {
     public void test_or() {
         var helloOrWorld = Api.c("hello").or(Api.c("world"));
 
-        Function<ParseContext, Empty> test = (ParseContext ctx) -> {
+        Function<Context, Empty> test = (Context ctx) -> {
             switch (helloOrWorld.parse(ctx)) {
-                case Ok(Either.Left(String s), ParseContext c) -> {
+                case Ok(Either.Left(String s), Context c) -> {
                     Assertions.assertEquals("hello", s);
                 }
-                case Ok(Either.Right(String s), ParseContext c) -> {
+                case Ok(Either.Right(String s), Context c) -> {
                     Assertions.assertEquals("world", s);
                 }
-                case Err(String msg, ParseContext newCtx) -> {
+                case Err(String msg, Context newCtx) -> {
                     Assertions.assertEquals(0, newCtx.index);
                 }
             }
             return new Empty();
         };
 
-        test.apply(ParseContext.of("hello"));
-        test.apply(ParseContext.of("world"));
-        test.apply(ParseContext.of("baz"));
+        test.apply(Context.of("hello"));
+        test.apply(Context.of("world"));
+        test.apply(Context.of("baz"));
     }
 
     @Test
@@ -60,10 +60,10 @@ public class CombinatorsTest {
                 .seq(spaces(Whitespace.Config.defaults()))
                 .seq(Api.c("world"));
 
-        var ctx1 = ParseContext.of("hello \n world");
+        var ctx1 = Context.of("hello \n world");
         var result = helloWorld.parse(ctx1);
 
-        if (result instanceof Ok(Pair(Pair(String h, Empty e), String w), ParseContext newCtx)) {
+        if (result instanceof Ok(Pair(Pair(String h, Empty e), String w), Context newCtx)) {
             Assertions.assertEquals("hello", h);
             Assertions.assertEquals("world", w);
             Assertions.assertEquals(newCtx.content.length(), newCtx.index);
@@ -71,10 +71,10 @@ public class CombinatorsTest {
             Assertions.fail();
         }
 
-        var ctx2 = ParseContext.of("hello \n baz");
+        var ctx2 = Context.of("hello \n baz");
         result = helloWorld.parse(ctx2);
 
-        if (result instanceof Err(String m, ParseContext newCtx)) {
+        if (result instanceof Err(String m, Context newCtx)) {
             Assertions.assertEquals(8, newCtx.index);
         }
     }
@@ -85,8 +85,8 @@ public class CombinatorsTest {
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = ws.dropLeft(hello);
-        var res = trimmedLeft.parse(ParseContext.of("\n\t hello"));
-        if (res instanceof Ok(String result, ParseContext resCtx)) {
+        var res = trimmedLeft.parse(Context.of("\n\t hello"));
+        if (res instanceof Ok(String result, Context resCtx)) {
             Assertions.assertEquals("hello", result);
             Assertions.assertEquals(resCtx.content.length(), resCtx.index);
         } else {
@@ -100,8 +100,8 @@ public class CombinatorsTest {
         var ws = Whitespace.spaces(Whitespace.Config.defaults());
 
         var trimmedLeft = hello.dropRight(ws);
-        var res = trimmedLeft.parse(ParseContext.of("hello  // this is comment"));
-        if (res instanceof Ok(String result, ParseContext resCtx)) {
+        var res = trimmedLeft.parse(Context.of("hello  // this is comment"));
+        if (res instanceof Ok(String result, Context resCtx)) {
             Assertions.assertEquals("hello", result);
             Assertions.assertEquals(resCtx.content.length(), resCtx.index);
         } else {
@@ -116,8 +116,8 @@ public class CombinatorsTest {
                 .map(Integer::valueOf)
                 .failIf(i -> i > 31, "day number cant be greater than 31");
 
-        var result = day.parse(ParseContext.of("32"));
-        if (result instanceof Err(String msg, ParseContext c)) {
+        var result = day.parse(Context.of("32"));
+        if (result instanceof Err(String msg, Context c)) {
             Assertions.assertEquals("day number cant be greater than 31", msg);
         } else {
             Assertions.fail();

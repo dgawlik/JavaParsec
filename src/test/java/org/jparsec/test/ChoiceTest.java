@@ -23,23 +23,23 @@ class ChoiceTest {
                 Api.c("1.2").map(Double::valueOf)
         );
 
-        Function<ParseContext, Empty> test = (ctx) -> {
+        Function<Context, Empty> test = (ctx) -> {
             switch(polymorphic.parse(ctx)) {
-                case Ok(One(String v), ParseContext c) -> assertEquals("hello", v);
-                case Ok(Two(Character c), ParseContext ct) -> {}
-                case Ok(Three(Boolean b), ParseContext c) -> assertEquals(true,  b);
-                case Ok(Four(Integer i), ParseContext c) -> assertEquals(1, (int) i);
-                case Ok(Five(Double d), ParseContext c) -> assertEquals(1.2, (double) d);
+                case Ok(One(String v), Context c) -> assertEquals("hello", v);
+                case Ok(Two(Character c), Context ct) -> {}
+                case Ok(Three(Boolean b), Context c) -> assertEquals(true,  b);
+                case Ok(Four(Integer i), Context c) -> assertEquals(1, (int) i);
+                case Ok(Five(Double d), Context c) -> assertEquals(1.2, (double) d);
                 default -> fail();
             }
             return new Empty();
         };
 
-        test.apply(ParseContext.of("hello"));
-        test.apply(ParseContext.of("c"));
-        test.apply(ParseContext.of("true"));
-        test.apply(ParseContext.of("1"));
-        test.apply(ParseContext.of("1.2"));
+        test.apply(Context.of("hello"));
+        test.apply(Context.of("c"));
+        test.apply(Context.of("true"));
+        test.apply(Context.of("1"));
+        test.apply(Context.of("1.2"));
 
     }
 

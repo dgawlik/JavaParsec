@@ -1,26 +1,26 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
+import org.jparsec.containers.Context;
 import org.jparsec.containers.Err;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.MatchResult;
 
-public class Recursive<T> extends Rule<T> {
+public class Recursive<T> extends Matcher<T> {
 
-    private Rule<T> inner;
+    private Matcher<T> inner;
 
     public Recursive() {
         super("error in recusive rule");
     }
 
-    public void set(Rule<T> inner) {
+    public void set(Matcher<T> inner) {
         this.inner = inner;
     }
 
     @Override
-    public ParseResult<T> parse(ParseContext ctx) {
+    public MatchResult<T> parse(Context ctx) {
         var result = this.inner.parse(ctx);
-        if (result instanceof Err(String msg, ParseContext ctx2)){
+        if (result instanceof Err(String msg, Context ctx2)){
             ctx.addVerboseError(errorMessage);
             ctx.appendTrace(errorMessage);
         }

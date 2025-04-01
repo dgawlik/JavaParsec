@@ -1,25 +1,25 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.*;
 
 public interface Seq {
 
-    class SeqX<T extends SeqOps> extends Rule<T> {
+    class SeqX<T extends SeqOps> extends Matcher<T> {
 
-        private final Rule<T> inner;
+        private final Matcher<T> inner;
 
-        public SeqX(Rule<T> inner) {
+        public SeqX(Matcher<T> inner) {
             super("error in SeqOps");
             this.inner = inner;
         }
 
-        public Rule<String> s() {
+        public Matcher<String> s() {
             return inner.map(ops -> ops.s(""));
         }
 
         @Override
-        public ParseResult<T> parse(ParseContext ctx) {
+        public MatchResult<T> parse(Context ctx) {
             return this.inner.parse(ctx);
         }
 
@@ -41,11 +41,11 @@ public interface Seq {
         }
     }
 
-    static <T, U> SeqX<Pair<T, U>> seq(Rule<T> one, Rule<U> two) {
+    static <T, U> SeqX<Pair<T, U>> seq(Matcher<T> one, Matcher<U> two) {
         return new SeqX<>(one.seq(two));
     }
 
-    static <T, U, W> SeqX<Tuple3<T, U, W>> seq(Rule<T> one, Rule<U> two, Rule<W> three) {
+    static <T, U, W> SeqX<Tuple3<T, U, W>> seq(Matcher<T> one, Matcher<U> two, Matcher<W> three) {
         return new SeqX<>(one
                 .seq(two)
                 .seq(three)
@@ -54,8 +54,8 @@ public interface Seq {
                         nested.second())));
     }
 
-    static <T, U, W, Z> SeqX<Tuple4<T, U, W, Z>> seq(Rule<T> one, Rule<U> two,
-                                                     Rule<W> three, Rule<Z> four) {
+    static <T, U, W, Z> SeqX<Tuple4<T, U, W, Z>> seq(Matcher<T> one, Matcher<U> two,
+                                                     Matcher<W> three, Matcher<Z> four) {
         return new SeqX<>(one
                 .seq(two)
                 .seq(three)
@@ -66,9 +66,9 @@ public interface Seq {
                         nested.second())));
     }
 
-    static <T, U, W, Z, Y> SeqX<Tuple5<T, U, W, Z, Y>> seq(Rule<T> one, Rule<U> two,
-                                                           Rule<W> three, Rule<Z> four,
-                                                           Rule<Y> five) {
+    static <T, U, W, Z, Y> SeqX<Tuple5<T, U, W, Z, Y>> seq(Matcher<T> one, Matcher<U> two,
+                                                           Matcher<W> three, Matcher<Z> four,
+                                                           Matcher<Y> five) {
         return new SeqX<>(one
                 .seq(two)
                 .seq(three)
@@ -81,9 +81,9 @@ public interface Seq {
                         nested.second())));
     }
 
-    static <T, U, W, Z, Y, X> SeqX<Tuple6<T, U, W, Z, Y, X>> seq(Rule<T> one, Rule<U> two,
-                                                                 Rule<W> three, Rule<Z> four,
-                                                                 Rule<Y> five, Rule<X> six) {
+    static <T, U, W, Z, Y, X> SeqX<Tuple6<T, U, W, Z, Y, X>> seq(Matcher<T> one, Matcher<U> two,
+                                                                 Matcher<W> three, Matcher<Z> four,
+                                                                 Matcher<Y> five, Matcher<X> six) {
         return new SeqX<>(one
                 .seq(two)
                 .seq(three)
@@ -99,10 +99,10 @@ public interface Seq {
                         nested.second())));
     }
 
-    static <T, U, W, Z, Y, X, G> SeqX<Tuple7<T, U, W, Z, Y, X, G>> seq(Rule<T> one, Rule<U> two,
-                                                                       Rule<W> three, Rule<Z> four,
-                                                                       Rule<Y> five, Rule<X> six,
-                                                                       Rule<G> seven) {
+    static <T, U, W, Z, Y, X, G> SeqX<Tuple7<T, U, W, Z, Y, X, G>> seq(Matcher<T> one, Matcher<U> two,
+                                                                       Matcher<W> three, Matcher<Z> four,
+                                                                       Matcher<Y> five, Matcher<X> six,
+                                                                       Matcher<G> seven) {
         return new SeqX<>(one
                 .seq(two)
                 .seq(three)

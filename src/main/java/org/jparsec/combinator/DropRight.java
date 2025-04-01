@@ -1,35 +1,35 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
-public class DropRight<T, U> extends Rule<T> {
+public class DropRight<T, U> extends Matcher<T> {
 
-    private final Rule<T> that;
-    private final Rule<U> other;
+    private final Matcher<T> that;
+    private final Matcher<U> other;
 
-    public DropRight(Rule<T> that, Rule<U> other) {
+    public DropRight(Matcher<T> that, Matcher<U> other) {
         super("error in drop right");
         this.that = that;
         this.other = other;
     }
 
     @Override
-    public ParseResult<T> parse(ParseContext ctx) {
+    public MatchResult<T> parse(Context ctx) {
         var keepRes = that.parse(ctx);
 
         return switch (keepRes) {
-            case Err(String msg, ParseContext ctx2) -> {
+            case Err(String msg, Context ctx2) -> {
                 ctx.addVerboseError(errorMessage);
                 ctx.appendTrace(errorMessage);
                 yield new Err<>(msg, ctx);
             }
-            case Ok(T res, ParseContext newCtx) -> switch (other.parse(newCtx)) {
-                case Ok(U res2, ParseContext newCtx2) -> new Ok<>(res, newCtx2);
-                case Err(String msg, ParseContext c) -> {
+            case Ok(T res, Context newCtx) -> switch (other.parse(newCtx)) {
+                case Ok(U res2, Context newCtx2) -> new Ok<>(res, newCtx2);
+                case Err(String msg, Context c) -> {
                     newCtx.appendTrace(errorMessage);
                     newCtx.addVerboseError(errorMessage);
                     yield new Err<>(customError.orElse(msg), newCtx);

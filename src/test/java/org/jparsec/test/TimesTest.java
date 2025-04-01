@@ -1,7 +1,7 @@
 package org.jparsec.test;
 
+import org.jparsec.containers.Context;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
 import org.jparsec.containers.Tuple5;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ class TimesTest {
                 times(digit(), 4).map(this::join)
         );
 
-        var result = date.parse(ParseContext.of("12/07/2025"));
-        if (result instanceof Ok(Tuple5(String day, Character c1, String month, Character c2, String year), ParseContext ctx)){
+        var result = date.parse(Context.of("12/07/2025"));
+        if (result instanceof Ok(Tuple5(String day, Character c1, String month, Character c2, String year), Context ctx)){
             Assertions.assertEquals("12/07/2025", day+"/"+month+"/"+year);
         }
     }

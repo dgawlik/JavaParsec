@@ -1,25 +1,24 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Api;
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
-public class Indent<T> extends Rule<T> {
+public class Indent<T> extends Matcher<T> {
 
-    private final Rule<T> inner;
+    private final Matcher<T> inner;
     private final String indentPattern;
 
-    public Indent(Rule<T> inner, String indentPattern) {
+    public Indent(Matcher<T> inner, String indentPattern) {
         super("indentation error");
         this.indentPattern = indentPattern;
         this.inner = inner;
     }
 
     @Override
-    public ParseResult<T> parse(ParseContext ctx) {
+    public MatchResult<T> parse(Context ctx) {
         String prevIndentPattern = ctx.indentPattern;
         ctx.indentLevel++;
         ctx.indentPattern = indentPattern;
@@ -32,7 +31,7 @@ public class Indent<T> extends Rule<T> {
                 ctx.addVerboseError(errorMessage);
                 yield e;
             }
-            case Ok(T r, ParseContext newCtx) -> {
+            case Ok(T r, Context newCtx) -> {
                 newCtx.indentLevel--;
                 newCtx.indentPattern = prevIndentPattern;
                 yield new Ok<>(r, newCtx);

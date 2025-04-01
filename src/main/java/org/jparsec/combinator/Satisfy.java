@@ -1,15 +1,15 @@
 package org.jparsec.combinator;
 
+import org.jparsec.Matcher;
 import org.jparsec.Ops;
-import org.jparsec.Rule;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
 import java.util.function.Predicate;
 
-public class Satisfy extends Rule<Character> {
+public class Satisfy extends Matcher<Character> {
 
     private final Predicate<Character> matcher;
     private final String toString;
@@ -32,7 +32,7 @@ public class Satisfy extends Rule<Character> {
         return new Concat(this.map(Ops::toString), c.map(Ops::toString));
     }
 
-    public Rule<String> s() {
+    public Matcher<String> s() {
         return this.map(Object::toString);
     }
 
@@ -46,7 +46,7 @@ public class Satisfy extends Rule<Character> {
     }
 
     @Override
-    public ParseResult<Character> parse(ParseContext ctx) {
+    public MatchResult<Character> parse(Context ctx) {
         if (ctx.index == ctx.content.length()) {
             ctx.appendTrace("unexpected end of stream");
             ctx.addVerboseError("unexpected end of stream");

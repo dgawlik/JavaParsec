@@ -24,7 +24,7 @@ public class IndentationTest {
         var elemOrContainer = container.or(elem);
         list.set(sepBy(elemOrContainer, nl()));
 
-        var result = list.parse(ParseContext.of("""
+        var result = list.parse(Context.of("""
 - books:
   - classic:
     - Adventures of Don Kichote

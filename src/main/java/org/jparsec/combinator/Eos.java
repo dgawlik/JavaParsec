@@ -1,9 +1,9 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.*;
 
-public class Eos extends Rule<Empty> {
+public class Eos extends Matcher<Empty> {
 
     public Eos() {
         super("error - characters remaining");
@@ -15,7 +15,7 @@ public class Eos extends Rule<Empty> {
     }
 
     @Override
-    public ParseResult<Empty> parse(ParseContext ctx) {
+    public MatchResult<Empty> parse(Context ctx) {
         if (ctx.index < ctx.content.length()){
             ctx.appendTrace(errorMessage);
             ctx.addVerboseError(errorMessage);

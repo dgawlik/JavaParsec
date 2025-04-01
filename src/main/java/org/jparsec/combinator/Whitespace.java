@@ -1,12 +1,12 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Whitespace extends Rule<Empty> {
+public class Whitespace extends Matcher<Empty> {
 
     public static class Config {
         private List<Character> ws = List.of(' ', '\t', '\n');
@@ -53,7 +53,7 @@ public class Whitespace extends Rule<Empty> {
     private final Config config;
 
     @Override
-    public ParseResult<Empty> parse(ParseContext ctx) {
+    public MatchResult<Empty> parse(Context ctx) {
         boolean moved1, moved2, moved3, moved = false;
         var newCtx = ctx.copy();
         do {
@@ -75,7 +75,7 @@ public class Whitespace extends Rule<Empty> {
         }
     }
 
-    private boolean takeWhileWhitespace(ParseContext ctx) {
+    private boolean takeWhileWhitespace(Context ctx) {
         boolean moved = false;
         while (ctx.index < ctx.content.length() &&
                 config.ws.contains(ctx.content.charAt(ctx.index))) {
@@ -91,7 +91,7 @@ public class Whitespace extends Rule<Empty> {
         return moved;
     }
 
-    private boolean takeWhileSinglelineComment(ParseContext ctx) {
+    private boolean takeWhileSinglelineComment(Context ctx) {
         boolean moved = false;
 
         var comment = config.singlelineComment;
@@ -118,7 +118,7 @@ public class Whitespace extends Rule<Empty> {
         return moved;
     }
 
-    private boolean takeWhileMultilineComment(ParseContext ctx) {
+    private boolean takeWhileMultilineComment(Context ctx) {
         var commentStart = config.multilineComment.first();
         var commentEnd = config.multilineComment.second();
 

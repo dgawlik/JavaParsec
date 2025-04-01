@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ParseContext {
+public class Context {
     public int line;
     public int column;
     public int index;
@@ -16,8 +16,8 @@ public class ParseContext {
     public Deque<String> traceErrorsSnapshot = new LinkedList<>();
     public List<String> allErrors = new ArrayList<>();
 
-    public ParseContext copy() {
-        var nw = new ParseContext(content);
+    public Context copy() {
+        var nw = new Context(content);
         nw.line = line;
         nw.column = column;
         nw.index = index;
@@ -29,23 +29,23 @@ public class ParseContext {
         return nw;
     }
 
-    private ParseContext(String content) {
+    private Context(String content) {
         this.content = content;
     }
 
-    public static ParseContext of(String content) {
-        return new ParseContext(content);
+    public static Context of(String content) {
+        return new Context(content);
     }
 
-    public void set(ParseContext ctx) {
+    public void set(Context ctx) {
         this.line = ctx.line;
         this.column = ctx.column;
         this.index = ctx.index;
         this.indentPattern = "  ";
         this.indentLevel = 0;
-        this.traceErrors = traceErrors;
-        this.traceErrorsSnapshot = traceErrorsSnapshot;
-        this.allErrors = allErrors;
+        this.traceErrors = ctx.traceErrors;
+        this.traceErrorsSnapshot = ctx.traceErrorsSnapshot;
+        this.allErrors = ctx.allErrors;
     }
 
     public void appendTrace(String msg) {

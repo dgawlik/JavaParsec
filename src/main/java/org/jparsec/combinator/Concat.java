@@ -1,22 +1,22 @@
 package org.jparsec.combinator;
 
+import org.jparsec.Matcher;
 import org.jparsec.Ops;
-import org.jparsec.Rule;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
-public class Concat extends Rule<String> {
+public class Concat extends Matcher<String> {
 
-    private final Rule<String> inner;
-    private final Rule<String> other;
+    private final Matcher<String> inner;
+    private final Matcher<String> other;
 
-    public Concat(Rule<String> inner, Rule<String> other) {
+    public Concat(Matcher<String> inner, Matcher<String> other) {
         super("error in concat");
         this.inner = inner;
         this.other = other;
     }
 
-    public Concat(Rule<String> inner) {
+    public Concat(Matcher<String> inner) {
         this(inner, null);
     }
 
@@ -29,7 +29,7 @@ public class Concat extends Rule<String> {
     }
 
     @Override
-    public ParseResult<String> parse(ParseContext ctx) {
+    public MatchResult<String> parse(Context ctx) {
         if (other != null) {
             return inner.seq(other)
                     .map(p -> p.first() + p.second())

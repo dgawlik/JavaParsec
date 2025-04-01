@@ -1,26 +1,26 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
+import org.jparsec.containers.Context;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.MatchResult;
 
 import java.util.List;
 import java.util.function.BiFunction;
 
 
-public class Times<T> extends Rule<List<T>> {
+public class Times<T> extends Matcher<List<T>> {
 
-    private final Rule<T> inner;
+    private final Matcher<T> inner;
     private final int from;
     private final int to;
 
-    private Times(Rule<T> inner, int times) {
+    private Times(Matcher<T> inner, int times) {
         this(inner, times, times);
     }
 
-    private Times(Rule<T> inner, int from, int to) {
+    private Times(Matcher<T> inner, int from, int to) {
         super((from == to
                 ? String.valueOf(from) : from + " to " + to)
                 + " occurences of" + inner.toString() + " required");
@@ -30,7 +30,7 @@ public class Times<T> extends Rule<List<T>> {
     }
 
 
-    public <U> Rule<U> reduce(U init, BiFunction<T, U, U> reducer) {
+    public <U> Matcher<U> reduce(U init, BiFunction<T, U, U> reducer) {
         return this.map(lst -> {
             U it = init;
             for (T el : lst) {
@@ -40,15 +40,15 @@ public class Times<T> extends Rule<List<T>> {
         });
     }
 
-    public Rule<String> s() {
+    public Matcher<String> s() {
         return this.reduce("", (T el, String acc) -> acc + el.toString());
     }
 
-    public static <U> Times<U> times(Rule<U> inner, int times) {
+    public static <U> Times<U> times(Matcher<U> inner, int times) {
         return new Times<>(inner, times);
     }
 
-    public static <U> Times<U> times(Rule<U> inner, int from, int to) {
+    public static <U> Times<U> times(Matcher<U> inner, int from, int to) {
         return new Times<>(inner, from, to);
     }
 
@@ -59,7 +59,7 @@ public class Times<T> extends Rule<List<T>> {
     }
 
     @Override
-    public ParseResult<List<T>> parse(ParseContext ctx) {
+    public MatchResult<List<T>> parse(Context ctx) {
         var res = (Ok<List<T>>) inner.takeWhile(x -> true).parse(ctx);
 
         if (res.value().size() < from || res.value().size() > to) {

@@ -1,3 +1,3 @@
 package org.jparsec.containers;
 
-public record Ok<T>(T value, ParseContext ctx) implements ParseResult<T> {}
+public record Ok<T>(T value, Context ctx) implements MatchResult<T> {}

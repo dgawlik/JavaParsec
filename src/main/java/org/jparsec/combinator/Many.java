@@ -1,28 +1,28 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
 
-public class Many<T> extends Rule<List<T>> {
+public class Many<T> extends Matcher<List<T>> {
 
     private final boolean isSome;
-    private final Rule<T> inner;
+    private final Matcher<T> inner;
 
-    private Many(Rule<T> inner, boolean isSome) {
+    private Many(Matcher<T> inner, boolean isSome) {
         super(isSome ? "More than zero of " + inner.toString() + " required" : "error in many");
         this.isSome = isSome;
         this.inner = inner;
     }
 
-    public <U> Rule<U> reduce(U init, BiFunction<T, U, U> reducer) {
+    public <U> Matcher<U> reduce(U init, BiFunction<T, U, U> reducer) {
         return this.map(lst -> {
             U it = init;
             for (T el : lst) {
@@ -32,15 +32,15 @@ public class Many<T> extends Rule<List<T>> {
         });
     }
 
-    public Rule<String> s() {
+    public Matcher<String> s() {
         return this.reduce("", (T el, String acc) -> acc + el.toString());
     }
 
-    public static <U> Many<U> many(Rule<U> inner) {
+    public static <U> Many<U> many(Matcher<U> inner) {
         return new Many<>(inner, false);
     }
 
-    public static <U> Many<U> some(Rule<U> inner) {
+    public static <U> Many<U> some(Matcher<U> inner) {
         return new Many<>(inner, true);
     }
 
@@ -50,13 +50,13 @@ public class Many<T> extends Rule<List<T>> {
     }
 
     @Override
-    public ParseResult<List<T>> parse(ParseContext ctx) {
+    public MatchResult<List<T>> parse(Context ctx) {
         List<T> results = new ArrayList<>();
-        ParseContext ctxIt = ctx;
+        Context ctxIt = ctx;
 
         if (isSome) {
             switch (inner.parse(ctxIt)) {
-                case Ok(T r, ParseContext newCtx) -> {
+                case Ok(T r, Context newCtx) -> {
                     ctxIt = newCtx;
                     results.add(r);
                 }

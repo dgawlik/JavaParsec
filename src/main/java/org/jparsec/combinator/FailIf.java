@@ -1,20 +1,20 @@
 package org.jparsec.combinator;
 
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
+import org.jparsec.containers.Context;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.MatchResult;
 
 import java.util.function.Predicate;
 
-public class FailIf<U> extends Rule<U> {
+public class FailIf<U> extends Matcher<U> {
 
-    private final Rule<U> that;
+    private final Matcher<U> that;
     private final Predicate<U> fn;
 
 
-    public FailIf(Rule<U> that, Predicate<U> fn, String errorMessage) {
+    public FailIf(Matcher<U> that, Predicate<U> fn, String errorMessage) {
         super("error in failIf");
         this.that = that;
         this.fn = fn;
@@ -22,11 +22,11 @@ public class FailIf<U> extends Rule<U> {
     }
 
     @Override
-    public ParseResult<U> parse(ParseContext ctx) {
+    public MatchResult<U> parse(Context ctx) {
         var result = that.parse(ctx);
 
         return switch (result) {
-            case Ok(U r, ParseContext newCtx) -> {
+            case Ok(U r, Context newCtx) -> {
                 if (fn.test(r)) {
                     newCtx.appendTrace(errorMessage);
                     newCtx.addVerboseError(errorMessage);
@@ -34,7 +34,7 @@ public class FailIf<U> extends Rule<U> {
                 }
                 yield new Ok<>(r, newCtx);
             }
-            case Err(String msg, ParseContext newCtx) -> {
+            case Err(String msg, Context newCtx) -> {
                 newCtx.addVerboseError(errorMessage);
                 newCtx.appendTrace(errorMessage);
                 yield new Err<>(customError.orElse(msg), newCtx);

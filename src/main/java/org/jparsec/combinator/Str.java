@@ -1,13 +1,13 @@
 package org.jparsec.combinator;
 
+import org.jparsec.Matcher;
 import org.jparsec.Ops;
-import org.jparsec.Rule;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.ParseResult;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.MatchResult;
 
-public class Str extends Rule<String> {
+public class Str extends Matcher<String> {
 
     private final String pattern;
     private final boolean caseInsensitive;
@@ -32,7 +32,7 @@ public class Str extends Rule<String> {
     }
 
     @Override
-    public ParseResult<String> parse(ParseContext ctx) {
+    public MatchResult<String> parse(Context ctx) {
         if (ctx.index + pattern.length() > ctx.content.length()) {
             ctx.appendTrace("unexpected end of stream");
             ctx.addVerboseError("unexpected end of stream");
@@ -53,7 +53,7 @@ public class Str extends Rule<String> {
         }
     }
 
-    private boolean matches(ParseContext ctx) {
+    private boolean matches(Context ctx) {
         var target = ctx.content.substring(
                 ctx.index,
                 ctx.index + pattern.length()

@@ -2,8 +2,8 @@ package org.jparsec.test;
 
 import org.jparsec.combinator.Strings;
 import org.jparsec.combinator.Whitespace;
+import org.jparsec.containers.Context;
 import org.jparsec.containers.Err;
-import org.jparsec.containers.ParseContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class ErrorPrettyPrintTest {
                 c
                 """;
 
-        var result = breakOnLine3.parse(ParseContext.of(text));
+        var result = breakOnLine3.parse(Context.of(text));
         if (result instanceof Err e) {
             Assertions.assertEquals("""
                     b
@@ -52,7 +52,7 @@ public class ErrorPrettyPrintTest {
                 c
                 """;
 
-        var result = breakOnLine2.parse(ParseContext.of(text));
+        var result = breakOnLine2.parse(Context.of(text));
         if (result instanceof Err e) {
             Assertions.assertEquals("""
                     a
@@ -79,7 +79,7 @@ public class ErrorPrettyPrintTest {
                 c
                 """;
 
-        var result = breakOnLine2.parse(ParseContext.of(text));
+        var result = breakOnLine2.parse(Context.of(text));
         if (result instanceof Err e) {
             Assertions.assertEquals("""
                     a
