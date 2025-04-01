@@ -35,17 +35,14 @@ This example is taken from the examples directory and is the simplest one. For m
 ```java
 public void main() {
 
-    var year = times(digit(), 4)
-            .map(Ops::toString)
+    var year = times(digit(), 4).s()
             .map(Integer::valueOf);
 
-    var month = times(digit(), 2)
-            .map(Ops::toString)
+    var month = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i < 1 || i > 12, "wrong month");
 
-    var day = times(digit(), 2)
-            .map(Ops::toString)
+    var day = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 31, "wrong day");
 
@@ -57,18 +54,15 @@ public void main() {
             day
     ).map(t -> LocalDate.of(t.one(), t.three(), t.five()));
 
-    var hour = times(digit(), 2)
-            .map(Ops::toString)
+    var hour = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 24, "wrong hour");
 
-    var minute = times(digit(), 2)
-            .map(Ops::toString)
+    var minute = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong minute");
 
-    var second = times(digit(), 2)
-            .map(Ops::toString)
+    var second = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong second");
 
