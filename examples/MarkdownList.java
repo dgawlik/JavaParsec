@@ -1,3 +1,7 @@
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.0.5
+
 import org.jparsec.Ops;
 import org.jparsec.Rule;
 import org.jparsec.combinator.Recursive;
@@ -19,10 +23,9 @@ interface ListItem {
 public void main() {
     Rule<String> singleElem = seq(
             c("* "),
-            some(noneOf('\n'))
+            some(noneOf('\n')).s()
     )
-    .map(Ops::takeSecond)
-    .map(Ops::toString);
+    .map(Ops::takeSecond);
 
     Recursive<List<ListItem>> list = recursive();
 
@@ -33,9 +36,8 @@ public void main() {
              )
             .map(t -> new ListItem.Group(t.first(), t.second()));
 
-    Rule<ListItem> elemOrContainer = container
-            .or(singleElem.map(e -> (ListItem) new ListItem.Single(e)))
-            .map(Ops::takeAny);
+    Rule<ListItem> elemOrContainer = any(container,
+            singleElem.map(e -> (ListItem) new ListItem.Single(e)));
 
     list.set(
             sepBy(elemOrContainer, nl())

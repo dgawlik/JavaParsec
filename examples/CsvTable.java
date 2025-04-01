@@ -1,3 +1,7 @@
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.0.5
+
 import org.jparsec.Ops;
 import org.jparsec.containers.Ok;
 import org.jparsec.containers.ParseContext;
@@ -18,13 +22,12 @@ public void main() {
 
     var escapedString = seq(
             c('"'),
-            many(any(join(c('\\'), c('"'),
-                    noneOf('"').s()))),
+            many(any(s(c('\\'), c('"')),
+                    noneOf('"').s())).s(),
             c('"').s()
-    ).map(Ops::takeMiddle).map(Ops::concat);
+    ).map(Ops::takeMiddle);
 
-    var normalString = many(noneOf(',', '\n'))
-            .map(Ops::toString);
+    var normalString = many(noneOf(',', '\n')).s();
 
     var string = any(escapedString, normalString);
 

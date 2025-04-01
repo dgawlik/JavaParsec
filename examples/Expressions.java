@@ -1,3 +1,8 @@
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.0.5
+
+
 import org.jparsec.Api;
 import org.jparsec.Ops;
 import org.jparsec.combinator.Recursive;
@@ -66,13 +71,12 @@ public void main() {
 
     var hexInteger = seq(
             c("0x"),
-            join(times(any(digit(), range('a', 'f')),
-                    1, 8))
+            times(any(digit(), range('a', 'f')), 1, 8).s()
     ).map(Ops::takeSecond);
 
     var rawInteger = any(c("0"),
-            join(nonZeroDigit(),
-                    many(digit()).map(Ops::toString)));
+            s(nonZeroDigit(),
+                    many(digit()).s()));
 
     var whitespace = spaces(Whitespace.Config.defaults());
 

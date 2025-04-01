@@ -1,3 +1,8 @@
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.0.5
+
+
 import org.jparsec.containers.Either.Left;
 import org.jparsec.containers.Either.Right;
 import org.jparsec.containers.Pair;
@@ -12,14 +17,14 @@ import static org.jparsec.Api.*;
 
 public void main() {
 
-    var year = concat(times(digit(), 4))
+    var year = times(digit(), 4).s()
             .map(Integer::valueOf);
 
-    var month = concat(times(digit(), 2))
+    var month = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i < 1 || i > 12, "wrong month");
 
-    var day = concat(times(digit(), 2))
+    var day = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 31, "wrong day");
 
@@ -31,15 +36,15 @@ public void main() {
             day
     ).map(t -> LocalDate.of(t.one(), t.three(), t.five()));
 
-    var hour = concat(times(digit(), 2))
+    var hour = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 24, "wrong hour");
 
-    var minute = concat(times(digit(), 2))
+    var minute = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong minute");
 
-    var second = concat(times(digit(), 2))
+    var second = times(digit(), 2).s()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong second");
 

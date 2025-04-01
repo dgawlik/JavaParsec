@@ -1,3 +1,7 @@
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.0.5
+
 import org.jparsec.Ops;
 import org.jparsec.Rule;
 
@@ -35,12 +39,12 @@ sealed interface Node {
 
 public void main() {
 
-    var scalar = concat(some(noneOf('\n', '}', ']', ',')));
+    var scalar = some(noneOf('\n', '}', ']', ',')).s();
     scalar.assertParses("\"hello\"  world ;");
 
     var doubleQuoted = seq(
             c('"'),
-            sconcat(many(any(join(
+            s(many(any(s(
                     anyOf('\\'),
                     anyOf('"')
             ),noneOf('\n', '"').s()))),
@@ -53,7 +57,7 @@ public void main() {
 
     var singleQuoted = seq(
             c('\''),
-            sconcat(many(any(join(
+            s(many(any(s(
                     anyOf('\\'),
                     anyOf('\'')
             ),noneOf('\n', '\'').s()))),
