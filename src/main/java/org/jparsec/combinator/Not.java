@@ -9,6 +9,7 @@ public class Not extends Rule<Empty> {
 
     public Not(Rule<?> inner) {
         super("Not expecting " + inner.toString());
+        this.inner = inner;
     }
 
     @Override
