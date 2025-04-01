@@ -1,6 +1,6 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.5
+//DEPS org.jparsec:JavaParsec:1.0.6
 
 
 import org.jparsec.Api;
@@ -75,8 +75,8 @@ public void main() {
     ).map(Ops::takeSecond);
 
     var rawInteger = any(c("0"),
-            s(nonZeroDigit(),
-                    many(digit()).s()));
+            seq(nonZeroDigit(),
+                    many(digit()).s()).s());
 
     var whitespace = spaces(Whitespace.Config.defaults());
 

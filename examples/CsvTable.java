@@ -1,6 +1,6 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.5
+//DEPS org.jparsec:JavaParsec:1.0.6
 
 import org.jparsec.Ops;
 import org.jparsec.containers.Ok;
@@ -22,9 +22,9 @@ public void main() {
 
     var escapedString = seq(
             c('"'),
-            many(any(s(c('\\'), c('"')),
+            many(any(seq(c('\\'), c('"')).s(),
                     noneOf('"').s())).s(),
-            c('"').s()
+            c('"')
     ).map(Ops::takeMiddle);
 
     var normalString = many(noneOf(',', '\n')).s();

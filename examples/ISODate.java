@@ -1,6 +1,6 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.5
+//DEPS org.jparsec:JavaParsec:1.0.6
 
 
 import org.jparsec.containers.Either.Left;

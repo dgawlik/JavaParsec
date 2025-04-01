@@ -106,32 +106,32 @@ public class Api {
         return Choice.choice(c1, c2, c3, c4, c5, c6, c7);
     }
 
-    public static <T, U> Rule<Pair<T, U>> seq(Rule<T> one, Rule<U> two) {
+    public static <T, U> Seq.SeqX<Pair<T, U>> seq(Rule<T> one, Rule<U> two) {
         return Seq.seq(one, two);
     }
 
-    public static <T, U, W> Rule<Tuple3<T, U, W>> seq(Rule<T> one, Rule<U> two, Rule<W> three) {
+    public static <T, U, W> Seq.SeqX<Tuple3<T, U, W>> seq(Rule<T> one, Rule<U> two, Rule<W> three) {
         return Seq.seq(one, two, three);
     }
 
-    public static <T, U, W, Z> Rule<Tuple4<T, U, W, Z>> seq(Rule<T> one, Rule<U> two,
+    public static <T, U, W, Z> Seq.SeqX<Tuple4<T, U, W, Z>> seq(Rule<T> one, Rule<U> two,
                                                             Rule<W> three, Rule<Z> four) {
         return Seq.seq(one, two, three, four);
     }
 
-    public static <T, U, W, Z, Y> Rule<Tuple5<T, U, W, Z, Y>> seq(Rule<T> one, Rule<U> two,
+    public static <T, U, W, Z, Y> Seq.SeqX<Tuple5<T, U, W, Z, Y>> seq(Rule<T> one, Rule<U> two,
                                                                   Rule<W> three, Rule<Z> four,
                                                                   Rule<Y> five) {
         return Seq.seq(one, two, three, four, five);
     }
 
-    public static <T, U, W, Z, Y, X> Rule<Tuple6<T, U, W, Z, Y, X>> seq(Rule<T> one, Rule<U> two,
-                                                                        Rule<W> three, Rule<Z> four,
-                                                                        Rule<Y> five, Rule<X> six) {
+    public static <T, U, W, Z, Y, X> Seq.SeqX<Tuple6<T, U, W, Z, Y, X>> seq(Rule<T> one, Rule<U> two,
+                                                                            Rule<W> three, Rule<Z> four,
+                                                                            Rule<Y> five, Rule<X> six) {
         return Seq.seq(one, two, three, four, five, six);
     }
 
-    public static <T, U, W, Z, Y, X, G> Rule<Tuple7<T, U, W, Z, Y, X, G>> seq(Rule<T> one, Rule<U> two,
+    public static <T, U, W, Z, Y, X, G> Seq.SeqX<Tuple7<T, U, W, Z, Y, X, G>> seq(Rule<T> one, Rule<U> two,
                                                                               Rule<W> three, Rule<Z> four,
                                                                               Rule<Y> five, Rule<X> six,
                                                                               Rule<G> seven) {
@@ -148,14 +148,6 @@ public class Api {
         }
 
         return it;
-    }
-
-    public static Rule<String> concat(Rule<List<Character>> list) {
-        return list.map(Ops::toString);
-    }
-
-    public static Rule<String> sconcat(Rule<List<String>> list) {
-        return list.map(Ops::concat);
     }
 
     public static <U> Many<U> many(Rule<U> inner) {

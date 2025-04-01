@@ -14,6 +14,10 @@ public class Seq2<T, U> extends Rule<Pair<T, U>> {
         this.other = other;
     }
 
+    public Rule<String> s() {
+        return this.map(p -> p.s(""));
+    }
+
 
     @Override
     public ParseResult<Pair<T, U>> parse(ParseContext ctx) {

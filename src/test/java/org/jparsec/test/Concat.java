@@ -9,12 +9,12 @@ public class Concat {
 
     @Test
     public void test_concat() {
-        var m = c('a').join(c('b')).join(c("hello"));
+        var m = seq(c('a'),c('b'),c("hello")).s();
 
         var r = m.parse("abhello");
         Assertions.assertEquals("abhello", r.ok());
 
-        var m2 = s(c('a'), c("hello"), c('b'));
+        var m2 = seq(c('a'), c("hello"), c('b')).s();
         var r2 = m2.parse("ahellob");
         Assertions.assertEquals("ahellob", r2.ok());
     }

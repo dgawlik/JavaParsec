@@ -1,6 +1,6 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.5
+//DEPS org.jparsec:JavaParsec:1.0.6
 
 import org.jparsec.Ops;
 import org.jparsec.Rule;
@@ -44,10 +44,12 @@ public void main() {
 
     var doubleQuoted = seq(
             c('"'),
-            s(many(any(s(
-                    anyOf('\\'),
-                    anyOf('"')
-            ),noneOf('\n', '"').s()))),
+           many(
+                   any(
+                           seq(anyOf('\\'), anyOf('"')).s(),
+                            noneOf('\n', '"').s()
+                   )
+           ).s(),
             anyOf('"')
     ).map(Ops::takeMiddle);
 
@@ -57,11 +59,13 @@ public void main() {
 
     var singleQuoted = seq(
             c('\''),
-            s(many(any(s(
-                    anyOf('\\'),
-                    anyOf('\'')
-            ),noneOf('\n', '\'').s()))),
-            c('\'')
+            many(
+                    any(
+                            seq(anyOf('\\'), anyOf('\'')).s(),
+                            noneOf('\n', '\'').s()
+                    )
+            ).s(),
+            anyOf('\'')
     ).map(Ops::takeMiddle);
 
     singleQuoted.assertParses("'abc\"\\n\\t xxx\"'");
@@ -73,8 +77,8 @@ public void main() {
                     .map(e -> e.left().isEmpty()),
             c('\n'),
             some(seq(
-                    concat(many(anyOf(' '))),
-                    concat(some(noneOf('\n'))),
+                    many(anyOf(' ')).s(),
+                    some(noneOf('\n')).s(),
                     c('\n').s()
             )),
             c('\n')
