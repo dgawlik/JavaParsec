@@ -7,6 +7,7 @@ import org.jparsec.containers.ParseContext;
 import org.jparsec.containers.ParseResult;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 
 public class Times<T> extends Rule<List<T>> {
@@ -28,11 +29,26 @@ public class Times<T> extends Rule<List<T>> {
         this.to = to;
     }
 
-    public static <U> Rule<List<U>> times(Rule<U> inner, int times) {
+
+    public <U> Rule<U> reduce(U init, BiFunction<T, U, U> reducer) {
+        return this.map(lst -> {
+            U it = init;
+            for (T el : lst) {
+                it = reducer.apply(el, it);
+            }
+            return it;
+        });
+    }
+
+    public Rule<String> s() {
+        return this.reduce("", (T el, String acc) -> acc + el.toString());
+    }
+
+    public static <U> Times<U> times(Rule<U> inner, int times) {
         return new Times<>(inner, times);
     }
 
-    public static <U> Rule<List<U>> times(Rule<U> inner, int from, int to) {
+    public static <U> Times<U> times(Rule<U> inner, int from, int to) {
         return new Times<>(inner, from, to);
     }
 

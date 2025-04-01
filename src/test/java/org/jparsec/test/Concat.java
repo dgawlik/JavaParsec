@@ -34,4 +34,12 @@ public class Concat {
         var r = m.parse("abbbaab");
         Assertions.assertEquals("abbbaab", r.ok());
     }
+
+    @Test
+    public void test_times() {
+        var m = times(any(c('a'), c('b')), 1 ,3).s();
+
+        var r = m.parse("aab");
+        Assertions.assertEquals("aab", r.ok());
+    }
 }

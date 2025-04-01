@@ -167,11 +167,11 @@ public class Api {
     }
 
 
-    public static <U> Rule<List<U>> times(Rule<U> inner, int times) {
+    public static <U> Times<U> times(Rule<U> inner, int times) {
         return Times.times(inner, times);
     }
 
-    public static <U> Rule<List<U>> times(Rule<U> inner, int from, int to) {
+    public static <U> Times<U> times(Rule<U> inner, int from, int to) {
         return Times.times(inner, from, to);
     }
 
