@@ -16,7 +16,7 @@ public class Seq2<T, U> extends Matcher<Pair<T, U>> {
     }
 
     public Matcher<String> s() {
-        return this.map(p -> p.s(""));
+        return this.map(p -> p.str(""));
     }
 
 

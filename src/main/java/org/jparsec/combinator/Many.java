@@ -32,7 +32,7 @@ public class Many<T> extends Matcher<List<T>> {
         });
     }
 
-    public Matcher<String> s() {
+    public Matcher<String> str() {
         return this.reduce("", (T el, String acc) -> acc + el.toString());
     }
 

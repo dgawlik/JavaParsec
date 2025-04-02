@@ -16,11 +16,11 @@ public class Times<T> extends Matcher<List<T>> {
     private final int from;
     private final int to;
 
-    private Times(Matcher<T> inner, int times) {
+    public Times(Matcher<T> inner, int times) {
         this(inner, times, times);
     }
 
-    private Times(Matcher<T> inner, int from, int to) {
+    public Times(Matcher<T> inner, int from, int to) {
         super((from == to
                 ? String.valueOf(from) : from + " to " + to)
                 + " occurences of" + inner.toString() + " required");
@@ -40,16 +40,8 @@ public class Times<T> extends Matcher<List<T>> {
         });
     }
 
-    public Matcher<String> s() {
+    public Matcher<String> str() {
         return this.reduce("", (T el, String acc) -> acc + el.toString());
-    }
-
-    public static <U> Times<U> times(Matcher<U> inner, int times) {
-        return new Times<>(inner, times);
-    }
-
-    public static <U> Times<U> times(Matcher<U> inner, int from, int to) {
-        return new Times<>(inner, from, to);
     }
 
     @Override

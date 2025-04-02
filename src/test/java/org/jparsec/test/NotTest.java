@@ -11,7 +11,7 @@ public class NotTest {
     @Test
     public void test_not_followed() {
         var zero = c("0").dropRight(not(digit()));
-        var nonZero = s(nonZeroDigit(), times(digit(), 1,3).s());
+        var nonZero = seq(nonZeroDigit(), times(digit(), 1,3)).str();
 
         var m = any(zero, nonZero).map(Integer::valueOf);
 

@@ -98,7 +98,7 @@ public abstract class Matcher<T> {
         return new MapOrFail<>(this, fn);
     }
 
-    public Matcher<List<T>> takeWhile(Predicate<T> fn) {
+    public TakeWhile<T> takeWhile(Predicate<T> fn) {
         return new TakeWhile<>(this, fn);
     }
 

@@ -162,11 +162,11 @@ public class Api {
 
 
     public static <U> Times<U> times(Matcher<U> inner, int times) {
-        return Times.times(inner, times);
+        return new Times<>(inner, times);
     }
 
     public static <U> Times<U> times(Matcher<U> inner, int from, int to) {
-        return Times.times(inner, from, to);
+        return new Times<>(inner, from, to);
     }
 
     public static <T> Opt<T> opt(Matcher<T> inner) {
@@ -175,17 +175,6 @@ public class Api {
 
     public static Str c(String pattern) {
         return Strings.c(pattern);
-    }
-
-    public static Matcher<String> s(Matcher<?>... matchers) {
-        assert matchers.length > 1;
-
-        var it = matchers[0];
-        for (int i = 1; i < matchers.length; i++) {
-            it = it.seq(matchers[i]).map(p -> p.first().toString() + p.second().toString());
-        }
-
-        return (Matcher<String>) it;
     }
 
     public static Str stringIgnoreCase(String pattern) {

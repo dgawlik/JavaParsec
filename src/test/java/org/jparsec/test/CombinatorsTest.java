@@ -12,39 +12,40 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jparsec.Api.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CombinatorsTest {
 
     @Test
     public void take_while_test() {
-        var takeA = anyChar().takeWhile(c -> c == 'a')
-                .map(lc -> lc.stream()
-                        .map(c -> "" + c)
-                        .collect(Collectors.joining()));
+        var takeA = anyChar().takeWhile(c -> c == 'a').str();
 
         var ctx = Context.of("aaab");
         var result = takeA.parse(ctx);
 
         if (result instanceof Ok(String r, Context newCtx)) {
-            Assertions.assertEquals("aaa", r);
-            Assertions.assertEquals(newCtx.content.indexOf("b"), newCtx.index);
+            assertEquals("aaa", r);
+            assertEquals(newCtx.content.indexOf("b"), newCtx.index);
+        } else {
+            fail();
         }
     }
 
     @Test
     public void test_or() {
-        var helloOrWorld = Api.c("hello").or(Api.c("world"));
+        var helloOrWorld = c("hello").or(c("world"));
 
         Function<Context, Empty> test = (Context ctx) -> {
             switch (helloOrWorld.parse(ctx)) {
                 case Ok(Either.Left(String s), Context c) -> {
-                    Assertions.assertEquals("hello", s);
+                    assertEquals("hello", s);
                 }
                 case Ok(Either.Right(String s), Context c) -> {
-                    Assertions.assertEquals("world", s);
+                    assertEquals("world", s);
                 }
                 case Err(String msg, Context newCtx) -> {
-                    Assertions.assertEquals(0, newCtx.index);
+                    assertEquals(0, newCtx.index);
                 }
             }
             return new Empty();
@@ -65,48 +66,48 @@ public class CombinatorsTest {
         var result = helloWorld.parse(ctx1);
 
         if (result instanceof Ok(Pair(Pair(String h, Object e), String w), Context newCtx)) {
-            Assertions.assertEquals("hello", h);
-            Assertions.assertEquals("world", w);
-            Assertions.assertEquals(newCtx.content.length(), newCtx.index);
+            assertEquals("hello", h);
+            assertEquals("world", w);
+            assertEquals(newCtx.content.length(), newCtx.index);
         } else {
-            Assertions.fail();
+            fail();
         }
 
         var ctx2 = Context.of("hello \n baz");
         result = helloWorld.parse(ctx2);
 
         if (result instanceof Err(String m, Context newCtx)) {
-            Assertions.assertEquals(8, newCtx.index);
+            assertEquals(8, newCtx.index);
         }
     }
 
     @Test
     public void test_trim_left() {
-        var hello = Api.c("hello");
+        var hello = c("hello");
         var ws = spaces();
 
         var trimmedLeft = ws.dropLeft(hello);
         var res = trimmedLeft.parse(Context.of("\n\t hello"));
         if (res instanceof Ok(String result, Context resCtx)) {
-            Assertions.assertEquals("hello", result);
-            Assertions.assertEquals(resCtx.content.length(), resCtx.index);
+            assertEquals("hello", result);
+            assertEquals(resCtx.content.length(), resCtx.index);
         } else {
-            Assertions.fail();
+            fail();
         }
     }
 
     @Test
     public void test_trim_right() {
-        var hello = Api.c("hello");
+        var hello = c("hello");
         var ws = many(spaces().or(comment("//")));
 
         var trimmedLeft = hello.dropRight(ws);
         var res = trimmedLeft.parse(Context.of("hello  // this is comment"));
         if (res instanceof Ok(String result, Context resCtx)) {
-            Assertions.assertEquals("hello", result);
-            Assertions.assertEquals(resCtx.content.length(), resCtx.index);
+            assertEquals("hello", result);
+            assertEquals(resCtx.content.length(), resCtx.index);
         } else {
-            Assertions.fail();
+            fail();
         }
     }
 
@@ -119,9 +120,9 @@ public class CombinatorsTest {
 
         var result = day.parse(Context.of("32"));
         if (result instanceof Err(String msg, Context c)) {
-            Assertions.assertEquals("day number cant be greater than 31", msg);
+            assertEquals("day number cant be greater than 31", msg);
         } else {
-            Assertions.fail();
+            fail();
         }
     }
 }

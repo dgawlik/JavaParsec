@@ -20,12 +20,12 @@ public class CsvTest {
     @Test
     public void test_success() {
         var escapedString = seq(
-                anyOf('"'),
+                c('"'),
                 many(noneOf('"')).map(this::join),
-                anyOf('"')).map(this::dropQuotes);
+                c('"')).map(this::dropQuotes);
 
-        var sep = anyOf(',');
-        var nl = anyOf('\n');
+        var sep = c(',');
+        var nl = c('\n');
 
         var normalString = many(noneOf(',', '\n')).map(this::join);
 

@@ -17,11 +17,11 @@ class ChoiceTest {
     @Test
     public void test_id(){
         var polymorphic = choice(
-                Api.c("hello"),
+                c("hello"),
                 anyChar(),
-                Api.c("true").map(Boolean::valueOf),
-                Api.c("1").map(Integer::valueOf),
-                Api.c("1.2").map(Double::valueOf)
+                c("true").map(Boolean::valueOf),
+                c("1").map(Integer::valueOf),
+                c("1.2").map(Double::valueOf)
         );
 
         Function<Context, Empty> test = (ctx) -> {

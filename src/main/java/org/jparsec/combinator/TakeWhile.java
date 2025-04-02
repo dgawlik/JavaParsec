@@ -39,6 +39,11 @@ public class TakeWhile<T> extends Matcher<List<T>> {
         return new Ok<>(results, itCtx);
     }
 
+    public Matcher<String> str() {
+        return new Map<>(this, lst ->
+                String.join("", lst.stream().map(Object::toString).toList()));
+    }
+
     @Override
     public String toString() {
         return "takeWhile[" + that.toString() + "]";

@@ -15,8 +15,8 @@ public interface Seq {
             this.inner = inner;
         }
 
-        public Matcher<String> s() {
-            return inner.map(ops -> ops.s(""));
+        public Matcher<String> str() {
+            return inner.map(ops -> ops.str(""));
         }
 
         @Override
