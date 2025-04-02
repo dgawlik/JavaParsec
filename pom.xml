@@ -9,7 +9,7 @@
     <version>1.1.1</version>
 
     <name>Java Parsec</name>
-    <description>Parser combinators for Java 24</description>
+    <description>Parser combinators for Java 21</description>
     <url>https://github.com/dgawlik/JavaParsec</url>
 
 
