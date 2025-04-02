@@ -81,6 +81,61 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/docs</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/site</outputDirectory>
+                            <attributes>
+                                <!-- Enable highlight.js -->
+                                <source-highlighter>highlightjs</source-highlighter>
+                                <highlightjs-theme>atom-one-dark</highlightjs-theme>
+
+                                <toc>left</toc>
+                                <toclevels>3</toclevels>
+                                <sectanchors>true</sectanchors>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <source>21</source>
+                    <additionalJOptions>
+                        <additionalJOption>-J--add-exports=jdk.javadoc/jdk.javadoc.internal.tool=ALL-UNNAMED</additionalJOption><!-- 1 -->
+                        <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</additionalJOption><!-- 1 -->
+                        <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption><!-- 1 -->
+                        <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</additionalJOption><!-- 1 -->
+                        <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption><!-- 1 -->
+                        <additionalJOption>-Xdoclint:all,-html,-accessibility</additionalJOption><!-- 2 -->
+                    </additionalJOptions>
+                    <doclet>org.asciidoctor.asciidoclet.Asciidoclet</doclet>
+                    <docletArtifact>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoclet</artifactId>
+                        <version>2.0.0</version>
+                    </docletArtifact>
+                    <additionalparam>
+                        --base-dir ${project.basedir}
+                        --attribute "name=${project.name}"
+                        --attribute "version=${project.version}"
+                        --attribute "title-link=https://example.com[${project.name} ${project.version}]"
+                    </additionalparam>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

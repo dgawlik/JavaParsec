@@ -11,6 +11,9 @@ import java.util.function.Predicate;
 
 public class Api {
 
+    /**
+     * Matches any single char.
+     */
     public static Satisfy anyChar() {
         return new Satisfy(c -> true, "", "any char");
     }

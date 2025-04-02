@@ -1,0 +1,79 @@
+= Installation and use
+
+**Check out the sources**
+
+----
+git clone https://github.com/dgawlik/JavaParsec.git
+----
+
+**Install maven dependency**
+
+----
+mvn install
+----
+
+The artifact is: _org.jparsec:JavaParsec:1.1.1_
+
+**Run with JBang**
+
+Download https://www.jbang.dev/[JBang]
+
+Create example file:
+[source, java]
+----
+//JAVA 24
+//PREVIEW
+//DEPS org.jparsec:JavaParsec:1.1.1
+
+import static org.jparsec.Api.*;
+
+import org.jparsec.containers.Context;
+import org.jparsec.containers.Ok;
+
+
+public void main(String[] args) {
+    var aOrB = anyOf('a', 'b');
+
+    var r = aOrB.parse("b");
+    if (r instanceof Ok(Character c, Context ctx)) {
+        System.out.println(c);
+    } else {
+        System.exit(1);
+    }
+
+}
+----
+
+Install https://vscodium.com/[VSCodium]
+
+Install JBang extension.
+
+Edit and run the file.
+
+**Run in java notebook**
+
+Install jupyter notebook
+
+----
+sudo apt-get install jupyter-notebook
+----
+
+Install Java kernel
+----
+jbang install-kernel@jupyter-java
+----
+
+Run notebook
+
+----
+jupyter notebook
+----
+
+Select Java kernel, create new notebook
+
+Import dependency with maven (notebook)
+
+----
+%maven org.jparsec:JavaParsec:1.1.1
+----
+

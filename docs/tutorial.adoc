@@ -1,0 +1,220 @@
+= Usage tutorial
+
+Writing simplified Markdown parser
+
+== Intro
+
+In this section we will parse subset of Markdown
+syntax with library constructs. We will skip parsing
+code blocks and thematic breaks leaving only 4 productions.
+
+----
+MarkdownDocument  ::=  Block*
+Block             ::=  HeadingBlock
+                   |  Paragraph
+                   |  BlockQuote
+                   |  BlankLine
+----
+
+Heading block will start with multiplicity of '#' and end with a newline.
+
+----
+ATXHeading      ::=  "#"{1, 6} [Space] Text LineBreak
+----
+
+On the other hand paragraph will allow single line breaks which will be not
+considered after parsing. It will allow for formatting text with common markdown
+punctuation.
+
+----
+Paragraph       ::=  (InlineContent (Space | LineBreak)*)+
+----
+
+
+Block quote consists of text lines prefixed by '>'
+
+----
+BlockQuote      ::=  (">" [Space] Text LineBreak)+
+----
+
+We will also need blank lines to separate text blocks:
+
+----
+BlankLine       ::=  (Space | Tab)* LineBreak
+----
+
+And finally the inline content is as follows:
+
+----
+InlineContent    ::=  InlineElement*
+InlineElement    ::=  Text
+                   |  Emphasis
+                   |  Strong
+                   |  InlineCode
+                   |  Link
+----
+
+Text is unicode characters without markdown punctuation.
+
+----
+Emphasis ::= `"*" Text "*"
+Strong = "**" Text "**"
+InlineCode  = "`" Text "`"
+Link   =  "[" Text "]" "(" Text ")"
+----
+
+== Parsing inline elements
+
+So the text element are plain characters without the puctuation of markdown. First
+we write a rule for single char. `noneOf` matches any of the characters that is not specified.
+Then we will take many occurences with the requirement of at least one char present - `some`.
+`some()` returns a list of chars so we have to map it to string - a `str()` method does that.
+
+[source, java]
+----
+public void main(String[] args) {
+    var textSingle = noneOf('*', '`', '[', ']', '(', ')', '>', '\n');
+
+    var text = some(textSingle).str();
+
+    var r1 = text.parse("this some text");
+
+    out.println(r1.ok());
+
+}
+----
+
+Lets test that the punctuation is not parsed
+
+[source, java]
+----
+public void main(String[] args) {
+    var textSingle = noneOf('*', '`', '[', ']', '(', ')', '>', '\n');
+
+    var text = some(textSingle).str();
+
+    var r1 = text.parse("this some *text*");
+
+    if (r1 instanceof Ok(String s, Context ctx)) {
+        assert r1.ok().equals("this some ");
+        assert ctx.index == ctx.content.indexOf("*");
+
+    } else {
+        throw new ParseException("unexpected");
+    }
+
+}
+----
+
+`some()` succeeded because we have at least one character matching, but
+the text got parsed up to the first occurence of '*'. We will handle the error later.
+To make the assertions inline we can use convenience methods on the result,
+`assertEquals` which throw exception if condition not met.
+
+[source, java]
+----
+public void main(String[] args) {
+    var textSingle = noneOf('*', '`', '[', ']', '(', ')', '>', '\n');
+
+    var text = some(textSingle).str();
+
+    text.assertEquals(
+        Context.of("this some *text*"), "this some ");
+
+}
+----
+
+Moving to the next elements we can reuse the text rule. But first we
+introduce sealed interface with records to hold variants.
+
+[source, java]
+----
+sealed interface Inline {
+    record Text(String value) implements Inline{};
+    record Emphasis(String value) implements Inline{};
+    record Strong(String value) implements Inline{};
+    record Code(String value) implements Inline{};
+    record Link(String text, String url) implements Inline{};
+}
+----
+
+We have to "capture" the char '*' on start and end and text goes in the middle.
+The we will take the middle value from `Tuple3` and map it to constructor.
+
+[source, java]
+----
+
+var emphasis = seq(c('*'), text, c('*'))
+    .map(Ops::takeMiddle).map(Inline.Text::new);
+
+out.println(emphasis.parse("*emphasis*").ok());
+----
+
+We get:
+
+`$ Text[value=emphasis]`
+
+[source, java]
+----
+emphasis.assertFails("* emphasis `code`*");
+----
+
+In this way we make sure that everything is correct. Text gets only
+parsed up to '`', but then we have to end the rule with '*' which is not matched.
+
+We move on to the next rules and test it
+
+[source, java]
+----
+public void main(String[] args) {
+    var textSingle = noneOf('*', '`', '[', ']', '(', ')', '>', '\n');
+    var text = some(textSingle).str();
+
+    var emphasis = seq(c('*'), text, c('*'))
+        .map(Ops::takeMiddle).map(Inline.Emphasis::new);
+
+    emphasis.assertFails("* emphasis `code`*");
+    emphasis.assertEquals(Context.of("*text*"),  new Inline.Emphasis("text"));
+
+    var strong = seq(c("**"), text, c("**"))
+        .map(Ops::takeMiddle).map(Inline.Strong::new);
+
+    strong.assertFails("** strong *nested* **");
+    strong.assertEquals(Context.of("**strong**"), new Inline.Strong("strong"));
+
+    var codeText = some(noneOf('`', '\n')).str();
+    var code = seq(c('`'), codeText, c('`'))
+        .map(Ops::takeMiddle).map(Inline.Code::new);
+    code.assertEquals(Context.of("`code ()*[]`"), new Inline.Code("code ()*[]"));
+
+    var link = seq(c('['), text, c(']'), c('('), text, c(')'))
+        .map( tuple6 -> new Inline.Link(tuple6.two(), tuple6.five()));
+    link.assertEquals(Context.of("[desc](https://link)"), new Inline.Link("desc", "https://link"));
+
+    var inline = choice(link, strong, code, emphasis, text)
+        .map(ch5 ->
+            switch (ch5) {
+                case One(Inline.Link l) -> (Inline) l;
+                case Two(Inline.Strong s) -> (Inline) s;
+                case Three(Inline.Code c) -> (Inline) c;
+                case Four(Inline.Emphasis e) -> (Inline) e;
+                case Five(String t) -> (Inline) new Inline.Text(t);
+            }
+        );
+
+    var r2 = some(inline).parse("text with **strong** and `code`");
+    out.println(r2.ok());
+
+}
+----
+
+Which gets:
+
+`$ [Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]`
+
+
+
+
+
+
+
