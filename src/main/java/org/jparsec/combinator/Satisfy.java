@@ -28,16 +28,8 @@ public class Satisfy extends Matcher<Character> {
         this.toString = toString;
     }
 
-    public Concat join(Satisfy c) {
-        return new Concat(this.map(Ops::toString), c.map(Ops::toString));
-    }
-
-    public Matcher<String> s() {
-        return this.map(Object::toString);
-    }
-
-    public Concat join(Str s) {
-        return new Concat(this.map(Ops::toString), s);
+    public Matcher<String> str() {
+        return this.map(c -> "" + c);
     }
 
     @Override

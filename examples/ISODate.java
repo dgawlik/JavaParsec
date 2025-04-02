@@ -1,11 +1,11 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.6
+//DEPS org.jparsec:JavaParsec:1.1.0
 
 
-import org.jparsec.containers.Either.Left;
-import org.jparsec.containers.Either.Right;
-import org.jparsec.containers.Pair;
+import org.jparsec.containers.choice.Either.Left;
+import org.jparsec.containers.choice.Either.Right;
+import org.jparsec.containers.seq.Pair;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,14 +17,14 @@ import static org.jparsec.Api.*;
 
 public void main() {
 
-    var year = times(digit(), 4).s()
+    var year = times(digit(), 4).str()
             .map(Integer::valueOf);
 
-    var month = times(digit(), 2).s()
+    var month = times(digit(), 2).str()
             .map(Integer::valueOf)
             .failIf(i -> i < 1 || i > 12, "wrong month");
 
-    var day = times(digit(), 2).s()
+    var day = times(digit(), 2).str()
             .map(Integer::valueOf)
             .failIf(i -> i > 31, "wrong day");
 
@@ -36,15 +36,15 @@ public void main() {
             day
     ).map(t -> LocalDate.of(t.one(), t.three(), t.five()));
 
-    var hour = times(digit(), 2).s()
+    var hour = times(digit(), 2).str()
             .map(Integer::valueOf)
             .failIf(i -> i > 24, "wrong hour");
 
-    var minute = times(digit(), 2).s()
+    var minute = times(digit(), 2).str()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong minute");
 
-    var second = times(digit(), 2).s()
+    var second = times(digit(), 2).str()
             .map(Integer::valueOf)
             .failIf(i -> i > 59, "wrong second");
 
@@ -65,7 +65,7 @@ public void main() {
         case Right(LocalDate value) -> new Right<>(value);
     });
 
-    out.println(datetime.parse(input("2024-03-23")));
-    out.println(datetime.parse(input("2024-03-23T11:33:01")));
-    out.println(datetime.parse(input("2024-13-23")));
+    out.println(datetime.parse("2024-03-23"));
+    out.println(datetime.parse("2024-03-23T11:33:01"));
+    out.println(datetime.parse("2024-13-23"));
 }

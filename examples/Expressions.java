@@ -1,15 +1,15 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.6
+//DEPS org.jparsec:JavaParsec:1.1.0
 
 
 import org.jparsec.Api;
 import org.jparsec.Ops;
 import org.jparsec.combinator.Recursive;
-import org.jparsec.containers.Either;
+import org.jparsec.containers.choice.Either;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
+import org.jparsec.containers.Context;
 
 import static java.lang.System.out;
 import static org.jparsec.Api.*;
@@ -70,14 +70,14 @@ public void main() {
 
     var hexInteger = seq(
             c("0x"),
-            times(any(digit(), range('a', 'f')), 1, 8).s()
+            times(any(digit(), range('a', 'f')), 1, 8).str()
     ).map(Ops::takeSecond);
 
     var rawInteger = any(c("0"),
             seq(nonZeroDigit(),
-                    many(digit()).s()).s());
+                    many(digit()).str()).str());
 
-    var whitespace = spaces(Whitespace.Config.defaults());
+    var whitespace = spaces();
 
     var integer = lexeme(any(hexInteger, rawInteger), whitespace)
             .map(Integer::valueOf);
@@ -109,7 +109,7 @@ public void main() {
     var result = expr.parse(input("3*2+1*(1+2)"));
 
     switch (result) {
-        case Ok(Expression e, ParseContext ctx) -> {
+        case Ok(Expression e, Context ctx) -> {
             out.println(e.calculate());
         }
         case Err e -> {

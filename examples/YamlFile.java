@@ -1,16 +1,18 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.6
+//DEPS org.jparsec:JavaParsec:1.1.0
 
 import org.jparsec.Ops;
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 
 import java.util.ArrayList;
 import java.util.Map;
 import org.jparsec.combinator.Recursive;
 import org.jparsec.containers.*;
-import org.jparsec.containers.Either.Left;
-import org.jparsec.containers.Either.Right;
+import org.jparsec.containers.seq.*;
+import org.jparsec.containers.choice.*;
+import org.jparsec.containers.choice.Either.Left;
+import org.jparsec.containers.choice.Either.Right;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,17 +40,17 @@ sealed interface Node {
 
 public void main() {
 
-    var scalar = some(noneOf('\n', '}', ']', ',')).s();
+    var scalar = some(noneOf('\n', '}', ']', ',')).str();
     scalar.assertParses("\"hello\"  world ;");
 
     var doubleQuoted = seq(
             c('"'),
            many(
                    any(
-                           seq(anyOf('\\'), anyOf('"')).s(),
-                            noneOf('\n', '"').s()
+                           seq(anyOf('\\'), anyOf('"')).str(),
+                            noneOf('\n', '"').str()
                    )
-           ).s(),
+           ).str(),
             anyOf('"')
     ).map(Ops::takeMiddle);
 
@@ -60,10 +62,10 @@ public void main() {
             c('\''),
             many(
                     any(
-                            seq(anyOf('\\'), anyOf('\'')).s(),
-                            noneOf('\n', '\'').s()
+                            seq(anyOf('\\'), anyOf('\'')).str(),
+                            noneOf('\n', '\'').str()
                     )
-            ).s(),
+            ).str(),
             anyOf('\'')
     ).map(Ops::takeMiddle);
 
@@ -71,14 +73,14 @@ public void main() {
     singleQuoted.assertFails("'unclosed");
     singleQuoted.assertFails("' with newline \n '");
 
-    Rule<String> blockScalar = seq(
+    Matcher<String> blockScalar = seq(
             c('|').or(c('>'))
                     .map(e -> e.left().isEmpty()),
             c('\n'),
             some(seq(
-                    many(anyOf(' ')).s(),
-                    some(noneOf('\n')).s(),
-                    c('\n').s()
+                    many(anyOf(' ')).str(),
+                    some(noneOf('\n')).str(),
+                    c('\n').str()
             )),
             c('\n')
     ).map(block -> {
@@ -119,7 +121,7 @@ public void main() {
             """), "line 1 line 2");
 
     var identifier = choice(
-            some(noneOf(' ', '\n', '\t', ':', '[', ']', '{', '}')).map(Ops::toString),
+            some(noneOf(' ', '\n', '\t', ':', '[', ']', '{', '}')).str(),
             singleQuoted,
             doubleQuoted)
             .map(Ops::takeAny);
@@ -127,7 +129,7 @@ public void main() {
 
     Recursive<Node> flowNode = recursive();
 
-    var ws = spaces(Whitespace.Config.defaults().withWhitespace(' ', '\t'));
+    var ws = spaces(' ', '\t');
 
     var keyValue = seq(
             lexeme(identifier, ws),
@@ -136,7 +138,7 @@ public void main() {
     ).map(t -> new Pair<>(t.one(), t.three()));
 
     var flowKeyValues = seq(
-            lexeme(c('{').s(), ws),
+            lexeme(c('{').str(), ws),
             sepBy(lexeme(keyValue, ws), lexeme(c(','), ws)),
             lexeme(c('}'), ws)
     ).map(Ops::takeMiddle)
@@ -144,7 +146,7 @@ public void main() {
                     .collect(toMap(Pair::first, Pair::second)));
 
     var flowList = seq(
-            lexeme(c('[').s(), ws),
+            lexeme(c('[').str(), ws),
             sepBy(lexeme(flowNode, ws), lexeme(c(','), ws)),
             c(']')
     ).map(Ops::takeMiddle);
@@ -240,7 +242,7 @@ public void main() {
     );
 
 
-    var ws2 = spaces(Whitespace.Config.defaults().withSinglelineComment("#"));
+    var ws2 = many(spaces().or(comment("#")));
 
     var yaml = ws2.dropLeft(many(lexeme(blockNode, ws2)));
 
@@ -267,6 +269,6 @@ public void main() {
                       - 'seven"s"'
                     """;
 
-    var result = yaml.parse(input(test));
+    var result = yaml.parse(test);
     out.println(result);
 }

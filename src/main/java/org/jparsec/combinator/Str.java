@@ -18,14 +18,6 @@ public class Str extends Matcher<String> {
         this.caseInsensitive = caseInsensitive;
     }
 
-    public Concat join(Satisfy c) {
-        return new Concat(this, c.map(Ops::toString));
-    }
-
-    public Concat join(Str s) {
-        return new Concat(this, s);
-    }
-
     @Override
     public String toString() {
         return "\"" + pattern + "\"";

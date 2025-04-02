@@ -1,12 +1,12 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.6
+//DEPS org.jparsec:JavaParsec:1.1.0
 
 import org.jparsec.Ops;
-import org.jparsec.Rule;
+import org.jparsec.Matcher;
 import org.jparsec.combinator.Recursive;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
+import org.jparsec.containers.Context;
 
 import java.util.List;
 
@@ -21,33 +21,33 @@ interface ListItem {
 
 
 public void main() {
-    Rule<String> singleElem = seq(
+    Matcher<String> singleElem = seq(
             c("* "),
-            some(noneOf('\n')).s()
+            some(noneOf('\n')).str()
     )
     .map(Ops::takeSecond);
 
     Recursive<List<ListItem>> list = recursive();
 
-    Rule<ListItem> container = seq(
+    Matcher<ListItem> container = seq(
             singleElem, indent(
                             seq(nl(), list).map(Ops::takeSecond),
                     "  ")
              )
             .map(t -> new ListItem.Group(t.first(), t.second()));
 
-    Rule<ListItem> elemOrContainer = any(container,
+    Matcher<ListItem> elemOrContainer = any(container,
             singleElem.map(e -> (ListItem) new ListItem.Single(e)));
 
     list.set(
             sepBy(elemOrContainer, nl())
     );
 
-    var result = list.parse(ParseContext.of("""
+    var result = list.parse("""
 * books
   * classic
     * Adventures of Don Kichote
-    * Sun sets again"""));
+    * Sun sets again""");
 
     if (result instanceof Ok o) {
         out.println(o.value());

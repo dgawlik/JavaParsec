@@ -1,11 +1,11 @@
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.0.6
+//DEPS org.jparsec:JavaParsec:1.1.0
 
 import org.jparsec.Ops;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.ParseContext;
-import org.jparsec.containers.Tuple4;
+import org.jparsec.containers.Context;
+import org.jparsec.containers.seq.Tuple4;
 
 import java.util.List;
 
@@ -22,12 +22,12 @@ public void main() {
 
     var escapedString = seq(
             c('"'),
-            many(any(seq(c('\\'), c('"')).s(),
-                    noneOf('"').s())).s(),
+            many(any(seq(c('\\'), c('"')).str(),
+                    noneOf('"').str())).str(),
             c('"')
     ).map(Ops::takeMiddle);
 
-    var normalString = many(noneOf(',', '\n')).s();
+    var normalString = many(noneOf(',', '\n')).str();
 
     var string = any(escapedString, normalString);
 
@@ -65,7 +65,7 @@ public void main() {
             Dominik,Gawlik,34
             Guido,"van Rossum",50
             """));
-    if (result instanceof Ok(Table r, ParseContext ctx)) {
+    if (result instanceof Ok(Table r, Context ctx)) {
         out.println(r);
     } else {
         out.println(result.errorPrettyPrint());

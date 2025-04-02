@@ -6,7 +6,7 @@
 
     <groupId>org.jparsec</groupId>
     <artifactId>JavaParsec</artifactId>
-    <version>1.0.8</version>
+    <version>1.1.1</version>
 
     <name>Java Parsec</name>
     <description>Parser combinators for Java 24</description>
