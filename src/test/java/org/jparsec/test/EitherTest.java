@@ -1,8 +1,8 @@
 package org.jparsec.test;
 
-import org.jparsec.containers.Either;
-import org.jparsec.containers.Either.Left;
-import org.jparsec.containers.Either.Right;
+import org.jparsec.containers.choice.Either;
+import org.jparsec.containers.choice.Either.Left;
+import org.jparsec.containers.choice.Either.Right;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

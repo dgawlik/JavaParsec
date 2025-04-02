@@ -3,6 +3,8 @@ package org.jparsec;
 
 import org.jparsec.combinator.*;
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.Either;
+import org.jparsec.containers.seq.Pair;
 
 import java.util.List;
 import java.util.Optional;

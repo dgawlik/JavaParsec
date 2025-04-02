@@ -1,6 +1,7 @@
 package org.jparsec;
 
-import org.jparsec.containers.*;
+import org.jparsec.containers.choice.*;
+import org.jparsec.containers.seq.*;
 
 import java.util.ArrayList;
 import java.util.List;

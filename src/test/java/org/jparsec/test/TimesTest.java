@@ -2,7 +2,7 @@ package org.jparsec.test;
 
 import org.jparsec.containers.Context;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.Tuple5;
+import org.jparsec.containers.seq.Tuple5;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

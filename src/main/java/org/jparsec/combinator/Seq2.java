@@ -2,6 +2,7 @@ package org.jparsec.combinator;
 
 import org.jparsec.Matcher;
 import org.jparsec.containers.*;
+import org.jparsec.containers.seq.Pair;
 
 public class Seq2<T, U> extends Matcher<Pair<T, U>> {
 

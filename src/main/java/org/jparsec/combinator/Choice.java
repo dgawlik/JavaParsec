@@ -1,9 +1,9 @@
 package org.jparsec.combinator;
 
 import org.jparsec.Matcher;
-import org.jparsec.containers.*;
-import org.jparsec.containers.Either.Left;
-import org.jparsec.containers.Either.Right;
+import org.jparsec.containers.choice.*;
+import org.jparsec.containers.choice.Either.Left;
+import org.jparsec.containers.choice.Either.Right;
 
 public interface Choice {
 

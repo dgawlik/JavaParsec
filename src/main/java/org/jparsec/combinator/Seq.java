@@ -2,6 +2,7 @@ package org.jparsec.combinator;
 
 import org.jparsec.Matcher;
 import org.jparsec.containers.*;
+import org.jparsec.containers.seq.*;
 
 public interface Seq {
 

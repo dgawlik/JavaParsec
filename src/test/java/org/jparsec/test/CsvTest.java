@@ -1,6 +1,8 @@
 package org.jparsec.test;
 
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.Either;
+import org.jparsec.containers.seq.Tuple3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

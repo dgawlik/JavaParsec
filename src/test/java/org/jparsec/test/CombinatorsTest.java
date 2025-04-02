@@ -2,8 +2,9 @@ package org.jparsec.test;
 
 import org.jparsec.Api;
 import org.jparsec.Ops;
-import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.Either;
+import org.jparsec.containers.seq.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -56,14 +57,14 @@ public class CombinatorsTest {
 
     @Test
     public void test_seq() {
-        var helloWorld = Api.c("hello")
-                .seq(spaces(Whitespace.Config.defaults()))
-                .seq(Api.c("world"));
+        var helloWorld = c("hello")
+                .seq(spaces())
+                .seq(c("world"));
 
         var ctx1 = Context.of("hello \n world");
         var result = helloWorld.parse(ctx1);
 
-        if (result instanceof Ok(Pair(Pair(String h, Empty e), String w), Context newCtx)) {
+        if (result instanceof Ok(Pair(Pair(String h, Object e), String w), Context newCtx)) {
             Assertions.assertEquals("hello", h);
             Assertions.assertEquals("world", w);
             Assertions.assertEquals(newCtx.content.length(), newCtx.index);
@@ -82,7 +83,7 @@ public class CombinatorsTest {
     @Test
     public void test_trim_left() {
         var hello = Api.c("hello");
-        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var ws = spaces();
 
         var trimmedLeft = ws.dropLeft(hello);
         var res = trimmedLeft.parse(Context.of("\n\t hello"));
@@ -97,7 +98,7 @@ public class CombinatorsTest {
     @Test
     public void test_trim_right() {
         var hello = Api.c("hello");
-        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var ws = many(spaces().or(comment("//")));
 
         var trimmedLeft = hello.dropRight(ws);
         var res = trimmedLeft.parse(Context.of("hello  // this is comment"));

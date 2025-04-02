@@ -1,7 +1,6 @@
 package org.jparsec.test;
 
 import org.jparsec.combinator.Lexeme;
-import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.Context;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;
@@ -14,8 +13,8 @@ public class LexemeTest {
     @Test
     public void lexeme_test(){
         var ch = anyOf('a');
-        var ws = Whitespace.spaces(Whitespace.Config.defaults());
-        var lexeme = Lexeme.lexeme(ch, ws);
+        var ws = spaces();
+        var lexeme = lexeme(ch, ws);
 
         var ctx1 = Context.of("a");
         var result = lexeme.parse(ctx1);

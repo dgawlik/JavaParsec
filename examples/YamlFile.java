@@ -8,7 +8,6 @@ import org.jparsec.Rule;
 import java.util.ArrayList;
 import java.util.Map;
 import org.jparsec.combinator.Recursive;
-import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.*;
 import org.jparsec.containers.Either.Left;
 import org.jparsec.containers.Either.Right;

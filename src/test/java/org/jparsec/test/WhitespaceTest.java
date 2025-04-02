@@ -1,22 +1,23 @@
 package org.jparsec.test;
 
-import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.Context;
 import org.jparsec.containers.Empty;
 import org.jparsec.containers.Ok;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.jparsec.Api.*;
+
 public class WhitespaceTest {
 
     @Test
     public void test_accept_whitespaces() {
-        var ws = Whitespace.spaces(Whitespace.Config.defaults());
+        var ws = spaces();
 
         var ctx = Context.of("  \t\n");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(Empty e, Context newCtx)) {
+        if (result instanceof Ok(Object e, Context newCtx)) {
             Assertions.assertEquals(newCtx.content.length(), newCtx.index);
         } else {
             Assertions.fail();
@@ -25,15 +26,14 @@ public class WhitespaceTest {
 
     @Test
     public void test_accept_comments() {
-        var ws = Whitespace.spaces(Whitespace.Config.defaults()
-                .withSinglelineComment("--"));
+        var ws = comment("--");
 
         var ctx = Context.of("""
                 -- this is a comment
                 a""");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(Empty e, Context newCtx)) {
+        if (result instanceof Ok(Object e, Context newCtx)) {
             Assertions.assertEquals(newCtx.content.lastIndexOf("a"), newCtx.index);
         } else {
             Assertions.fail();
@@ -42,8 +42,7 @@ public class WhitespaceTest {
 
     @Test
     public void test_accept_multiline_comments() {
-        var ws = Whitespace.spaces(Whitespace.Config.defaults()
-                .withMultilineComment("#{", "#}"));
+        var ws = many(spaces().or(multilineComment("#{", "#}")));
 
         var ctx = Context.of("""
                 #{
@@ -53,7 +52,7 @@ public class WhitespaceTest {
                 a""");
         var result = ws.parse(ctx);
 
-        if (result instanceof Ok(Empty e, Context newCtx)) {
+        if (result instanceof Ok(Object e, Context newCtx)) {
             Assertions.assertEquals(newCtx.content.lastIndexOf("a"), newCtx.index);
         } else {
             Assertions.fail();

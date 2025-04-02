@@ -6,7 +6,6 @@
 import org.jparsec.Api;
 import org.jparsec.Ops;
 import org.jparsec.combinator.Recursive;
-import org.jparsec.combinator.Whitespace;
 import org.jparsec.containers.Either;
 import org.jparsec.containers.Err;
 import org.jparsec.containers.Ok;

@@ -2,6 +2,8 @@ package org.jparsec;
 
 import org.jparsec.combinator.*;
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.*;
+import org.jparsec.containers.seq.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -190,12 +192,20 @@ public class Api {
         return Strings.stringIgnoreCase(pattern);
     }
 
-    public static Whitespace spaces(Whitespace.Config config) {
-        return Whitespace.spaces(config);
+    public static Spaces spaces(Character... chrs) {
+        return new Spaces(chrs);
     }
 
-    public static <T> Lexeme<T> lexeme(Matcher<T> inner, Whitespace ws) {
-        return Lexeme.lexeme(inner, ws);
+    public static SinglelineComment comment(String act) {
+        return new SinglelineComment(act);
+    }
+
+    public static MultilineComment multilineComment(String start, String end) {
+        return new MultilineComment(start, end);
+    }
+
+    public static <T> Lexeme<T> lexeme(Matcher<T> inner, Matcher<?> ws) {
+        return new Lexeme<>(inner, ws);
     }
 
     public static <V, U> Matcher<List<V>> sepBy(Matcher<V> inner, Matcher<U> sep) {

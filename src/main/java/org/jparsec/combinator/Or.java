@@ -2,6 +2,7 @@ package org.jparsec.combinator;
 
 import org.jparsec.Matcher;
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.Either;
 
 public class Or<T, U> extends Matcher<Either<T, U>> {
 

@@ -4,6 +4,8 @@ import org.jparsec.Api;
 import org.jparsec.Ops;
 import org.jparsec.combinator.Recursive;
 import org.jparsec.containers.*;
+import org.jparsec.containers.choice.Either;
+import org.jparsec.containers.seq.Pair;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

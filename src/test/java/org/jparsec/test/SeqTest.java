@@ -3,7 +3,7 @@ package org.jparsec.test;
 import org.jparsec.combinator.Seq;
 import org.jparsec.containers.Context;
 import org.jparsec.containers.Ok;
-import org.jparsec.containers.Tuple7;
+import org.jparsec.containers.seq.Tuple7;
 import org.junit.jupiter.api.Test;
 
 import static org.jparsec.combinator.Strings.c;
