@@ -1,18 +1,24 @@
 = Installation and use
 
-**Check out the sources**
+**Add dependency to your project**
 
 ----
-git clone https://github.com/dgawlik/JavaParsec.git
+<repositories>
+    <repository>
+      <id>github</id>
+      <name>Github</name>
+      <url>https://maven.pkg.github.com</url>
+    </repository>
+</repositories>
 ----
 
-**Install maven dependency**
-
 ----
-mvn install
+<dependency>
+  <groupId>org.jparsec</groupId>
+  <artifactId>java-parsec</artifactId>
+  <version>1.1.1</version>
+</dependency>
 ----
-
-The artifact is: _org.jparsec:JavaParsec:1.1.1_
 
 **Run with JBang**
 
@@ -23,7 +29,8 @@ Create example file:
 ----
 //JAVA 24
 //PREVIEW
-//DEPS org.jparsec:JavaParsec:1.1.1
+//REPOS mavencentral,github=https://maven.pkg.github.com
+//DEPS org.jparsec:java-parsec:1.1.1
 
 import static org.jparsec.Api.*;
 
@@ -72,6 +79,10 @@ jupyter notebook
 Select Java kernel, create new notebook
 
 Import dependency with maven (notebook)
+
+----
+%mavenRepo snapshots https://maven.pkg.github.com
+----
 
 ----
 %maven org.jparsec:JavaParsec:1.1.1
