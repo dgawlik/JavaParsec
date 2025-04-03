@@ -150,9 +150,10 @@ var emphasis = seq(c('*'), text, c('*'))
 out.println(emphasis.parse("*emphasis*").ok());
 ----
 
-We get:
-
-`$ Text[value=emphasis]`
+Result
+----
+Text[value=emphasis]
+----
 
 [source, java]
 ----
