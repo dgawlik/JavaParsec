@@ -1,5 +1,5 @@
 # JavaParsec
-Parser combinators for Java 24
+Parser combinators for Java 21
 
 ## Motivation
 
