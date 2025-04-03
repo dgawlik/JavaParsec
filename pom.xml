@@ -13,6 +13,13 @@
     <url>https://github.com/dgawlik/JavaParsec</url>
 
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/dgawlik/JavaParsec</url>
+        </repository>
+    </distributionManagement>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
