@@ -36,14 +36,6 @@
         </developer>
     </developers>
 
-    <scm>
-        <connection>https://github.com/dgawlik/JavaParsec.git</connection>
-        <developerConnection>git@github.com:dgawlik/JavaParsec.git</developerConnection>
-        <url>https://github.com/dgawlik/JavaParsec</url>
-        <tag>HEAD</tag>
-    </scm>
-
-
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
