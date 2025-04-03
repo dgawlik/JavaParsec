@@ -1,0 +1,6 @@
+= Api
+
+All JavaDocs are present link:apidocs/index.html[here]
+
+You may take a look on link:apidocs/org/jparsec/Api.html[all combinators]
+

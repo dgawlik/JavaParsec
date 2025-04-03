@@ -44,9 +44,6 @@ For usage there a several recommended options:
 * java 24 implicit class main functions
 
 
-
-=== Installation
-
 === Quick Example
 This example is taken from the examples directory. For more complex cases refer to the repository.
 

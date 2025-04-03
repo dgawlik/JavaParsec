@@ -1,0 +1,89 @@
+= Handling errors
+
+*JavaParsec* returns first bottom-most error while
+taking the input.
+
+[source, java]
+----
+var identifier = seq(nonZeroDigit(), many(digit())).str();
+
+var result = identifier.parse("01");
+
+out.println(result.error());
+// expected non zero digit
+----
+
+Sometimes for complex rules this is not desired. You can override
+the error by setting custom message like follows.
+
+[source, java]
+----
+var identifier = seq(nonZeroDigit(), many(digit())).str();
+identifier = identifier.setErrorMessage("wrong identifier");
+
+var result = identifier.parse("01");
+
+out.println(result.error());
+// wrong identifier
+----
+
+The way it works is that the top-most override wins, so
+if you set the error message on the tree root then you will get
+single error for anything. This is why it should be used sparingly
+on "tokenization" level.
+
+Sometimes though you want to inspect the hierarchy of rules applied.
+This is possible with
+
+[source, java]
+----
+out.println(result.errorTrace());
+----
+
+Which gets
+
+----
+Line: 0, Column: 0 => error in mapping
+ +- Line: 0, Column: 0 => error in sequence
+  +- Line: 0, Column: 0 => expected non zero digit
+----
+
+But some rules are optimistic and always return the positive result:
+like `many()` `opt()` and `sepBy()`.
+
+To inspect these errors you can view all the errors encountered, but
+be vary that sometimes these are false positives.
+
+[source, java]
+----
+var as = many(c('a')).str();
+
+var result = as.parse("aab");
+out.println(result.verboseErrors());
+----
+
+----
+Line: 0, Column: 2 => expected 'a'
+----
+
+The most detailed error message with source context
+can be obtained in this way:
+
+[source, java]
+----
+var as = seq(c("aaa"), c('\n'), c("aaa"));
+
+var result = as.parse("""
+aaa
+baa
+""");
+out.println(result.errorPrettyPrint());
+----
+
+----
+aaa
+>>baa
+--------
+Line: 1, Column: 0
+expected "aaa"
+----

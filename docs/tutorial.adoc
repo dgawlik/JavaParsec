@@ -2,7 +2,7 @@
 
 Writing simplified Markdown parser
 
-== Intro
+=== Intro
 
 In this section we will parse subset of Markdown
 syntax with library constructs. We will skip parsing
@@ -63,7 +63,7 @@ InlineCode  = "`" Text "`"
 Link   =  "[" Text "]" "(" Text ")"
 ----
 
-== Parsing inline elements
+=== Parsing inline elements
 
 So the text element are plain characters without the puctuation of markdown. First
 we write a rule for single char. `noneOf` matches any of the characters that is not specified.
@@ -212,6 +212,7 @@ Which gets:
 
 `$ [Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]`
 
+=== Parsing blocks
 
 We move on to parsing on whole blocks. Lets start with the paragraph. It is any of the
 inline elements which are separated by either mutliple spaces or a single newline.
