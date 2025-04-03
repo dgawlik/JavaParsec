@@ -162,7 +162,7 @@ emphasis.assertFails("* emphasis `code`*");
 In this way we make sure that everything is correct. Text gets only
 parsed up to '`', but then we have to end the rule with '*' which is not matched.
 
-We move on to the next rules and test them
+The following are the other rules
 
 [source, java]
 ----
@@ -208,14 +208,15 @@ public void main(String[] args) {
 }
 ----
 
-Which gets:
-
-`$ [Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]`
+----
+[Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]
+----
 
 === Parsing blocks
 
-We move on to parsing on whole blocks. Lets start with the paragraph. It is any of the
-inline elements which are separated by either mutliple spaces or a single newline.
+Blocks are separated by two newlines. The more complex case is paragraph because it
+has to incorporate stylized text. For headers and links we can just parse simple text.
+Starting with paragraph:
 
 [source, java]
 ----
@@ -228,7 +229,7 @@ var r3 = paragraph.parse("""
 assert r3.isOk();
 ----
 
-The block quote is a normal text without punctuation, but each starts with '>'.
+The block quote in this tutorial is a normal text without punctuation, but each  line starts with '>'.
 
 [source, java]
 ----
@@ -244,11 +245,11 @@ var r4 = blockQuote.parse("""
 assert r4.ok().equals("first line second line");
 ----
 
-Lets move on to separating paragraphs.
+Then we have to separate the blocks.
 
 [source, java]
 ----
-var blankLine = seq(many(c(' ')), c('\n'));
+var blankLine = seq(many(c(' ')), some(c('\n')));
 
 var r5 = sepBy(paragraph, blankLine).parse("""
         paragraph 1
@@ -258,10 +259,7 @@ var r5 = sepBy(paragraph, blankLine).parse("""
 assert r5.ok().size() == 2;
 ----
 
-Each block quote element will be separated by blank line which consists only
-of whitespace characters. So we use `sepBy` rule to gather all paragraphs in test.
-
-Heading is a text prefixed by number of '#' s. Lets parse that.
+Heading is a simple text prefixed by number of '#' s.
 
 [source, java]
 ----
@@ -378,10 +376,13 @@ public void main(String[] args) {
 }
 ----
 
-Result:
+The result
+----
+[Paragraph[elements=[Text[value=This is a ], Strong[value=strong], Text[value=paragraph.], Text[value=With ], Code[value=code]]], Heading[nestLevel=1, text=Heading 1], BlockQoute[text= Some interesting  quote]]
+----
 
-----
-$ [Paragraph[elements=[Text[value=This is a ], Strong[value=strong], Text[value=paragraph.], Text[value=With ], Code[value=code]]], Heading[nestLevel=1, text=Heading 1], BlockQoute[text= Some interesting  quote]]
-----
+Note that we are doing it in iterative way. We started with bottom-most rule
+and built up to more complex ones. The experience was much like working in REPL.
+This way you can speed up the process significantly.
 
 
