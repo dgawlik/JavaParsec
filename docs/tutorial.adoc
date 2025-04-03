@@ -162,7 +162,7 @@ emphasis.assertFails("* emphasis `code`*");
 In this way we make sure that everything is correct. Text gets only
 parsed up to '`', but then we have to end the rule with '*' which is not matched.
 
-We move on to the next rules and test it
+We move on to the next rules and test them
 
 [source, java]
 ----
@@ -213,8 +213,174 @@ Which gets:
 `$ [Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]`
 
 
+We move on to parsing on whole blocks. Lets start with the paragraph. It is any of the
+inline elements which are separated by either mutliple spaces or a single newline.
+
+[source, java]
+----
+var paragraph = sepBy(inline, (c('\n').or(some(c(' ')))));
+var r3 = paragraph.parse("""
+        normal text   *emphasis text*
+        **strong text**
+        `code text`
+        """);
+assert r3.isOk();
+----
+
+The block quote is a normal text without punctuation, but each starts with '>'.
+
+[source, java]
+----
+ var blockQuote = sepBy(
+    seq(c('>'), text)
+        .map(Ops::takeSecond),
+    c('\n')).map(list -> String.join(" ", list));
+
+var r4 = blockQuote.parse("""
+        first line
+        second line
+        """);
+assert r4.ok().equals("first line second line");
+----
+
+Lets move on to separating paragraphs.
+
+[source, java]
+----
+var blankLine = seq(many(c(' ')), c('\n'));
+
+var r5 = sepBy(paragraph, blankLine).parse("""
+        paragraph 1
+
+        paragraph 2
+        """);
+assert r5.ok().size() == 2;
+----
+
+Each block quote element will be separated by blank line which consists only
+of whitespace characters. So we use `sepBy` rule to gather all paragraphs in test.
+
+Heading is a text prefixed by number of '#' s. Lets parse that.
+
+[source, java]
+----
+var heading = seq(
+        times(c('#'), 1, 6)
+            .map(List::size),
+        many(c(' ')),
+        text
+).map(p -> new Block.HeadingBlock(p.one(), p.three()));
+
+heading.assertEquals(Context.of("## heading 2"), new Block.HeadingBlock(2, "heading 2"));
+----
+
+And now we are ready to combine everything together:
+
+[source, java]
+----
+public void main(String[] args) {
+    var textSingle = noneOf('*', '#', '`', '[', ']', '(', ')', '>', '\n');
+    var text = some(textSingle).str();
+
+    var emphasis = seq(c('*'), text, c('*'))
+        .map(Ops::takeMiddle).map(Inline.Emphasis::new);
+
+    emphasis.assertFails("* emphasis `code`*");
+    emphasis.assertEquals(Context.of("*text*"),  new Inline.Emphasis("text"));
+
+    var strong = seq(c("**"), text, c("**"))
+        .map(Ops::takeMiddle).map(Inline.Strong::new);
+
+    strong.assertFails("** strong *nested* **");
+    strong.assertEquals(Context.of("**strong**"), new Inline.Strong("strong"));
+
+    var codeText = some(noneOf('`', '\n')).str();
+    var code = seq(c('`'), codeText, c('`'))
+        .map(Ops::takeMiddle).map(Inline.Code::new);
+    code.assertEquals(Context.of("`code ()*[]`"), new Inline.Code("code ()*[]"));
+
+    var link = seq(c('['), text, c(']'), c('('), text, c(')'))
+        .map( tuple6 -> new Inline.Link(tuple6.two(), tuple6.five()));
+    link.assertEquals(Context.of("[desc](https://link)"), new Inline.Link("desc", "https://link"));
+
+    var inline = choice(link, strong, code, emphasis, text)
+        .map(ch5 ->
+            switch (ch5) {
+                case One(Inline.Link l) -> (Inline) l;
+                case Two(Inline.Strong s) -> (Inline) s;
+                case Three(Inline.Code c) -> (Inline) c;
+                case Four(Inline.Emphasis e) -> (Inline) e;
+                case Five(String t) -> (Inline) new Inline.Text(t);
+            }
+        );
 
 
+    var paragraph = sepBy(inline, (c('\n').or(many(c(' ')))))
+         .map(Block.Paragraph::new);
+    var r3 = paragraph.parse("""
+            normal text   *emphasis text*
+            **strong text**
+            `code text`
+            """);
+    assert r3.isOk();
 
+    var blockQuote = sepBy(
+        seq(c('>'), text)
+            .map(Ops::takeSecond),
+        c('\n')).map(list -> String.join(" ", list))
+        .map(Block.BlockQoute::new);
+
+    var r4 = blockQuote.parse("""
+            first line
+            second line
+            """);
+    assert r4.ok().equals(new Block.BlockQoute("first line second line"));
+
+    var blankLine = seq(many(c(' ')), many(c('\n')));
+
+    var r5 = sepBy(paragraph, blankLine).parse("""
+            paragraph 1
+
+            paragraph 2
+            """);
+    assert r5.ok().size() == 2;
+
+    var heading = seq(
+            times(c('#'), 1, 6)
+                .map(List::size),
+            many(c(' ')),
+            text
+    ).map(p -> new Block.Heading(p.one(), p.three()));
+
+    heading.assertEquals(Context.of("## heading 2"), new Block.Heading(2, "heading 2"));
+
+    var block = choice(blockQuote, paragraph, heading)
+            .map(t3 -> switch(t3) {
+                case One(Block.BlockQoute q) -> (Block) q;
+                case Two(Block.Paragraph p) -> (Block) p;
+                case Three(Block.Heading h) -> (Block) h;
+            });
+
+    var markdown = sepBy(block, blankLine);
+
+    var test = """
+            This is a **strong** paragraph.
+            With `code`
+
+            # Heading 1
+
+            > Some interesting
+            > quote
+            """;
+
+    out.println(markdown.parse(test).ok());
+}
+----
+
+Result:
+
+----
+$ [Paragraph[elements=[Text[value=This is a ], Strong[value=strong], Text[value=paragraph.], Text[value=With ], Code[value=code]]], Heading[nestLevel=1, text=Heading 1], BlockQoute[text= Some interesting  quote]]
+----
 
 
