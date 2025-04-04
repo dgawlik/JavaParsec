@@ -1,7 +1,13 @@
 = Handling errors
 
-*JavaParsec* returns first bottom-most error while
-taking the input.
+Whenever possible the library tries to return first encountered bottom most error.
+But there are some optimistic matchers like:
+
+* link:apidocs/org/jparsec/Api.html#many(org.jparsec.Matcher)[many()]
+* link:apidocs/org/jparsec/Api.html#opt(org.jparsec.Matcher)[opt()]
+
+that always succeed. This complicates the development but it is not impossible to get
+these errors. About that in a second.
 
 [source, java]
 ----
@@ -10,49 +16,55 @@ var identifier = seq(nonZeroDigit(), many(digit())).str();
 var result = identifier.parse("01");
 
 out.println(result.error());
-// expected non zero digit
 ----
 
-Sometimes for complex rules this is not desired. You can override
-the error by setting custom message like follows.
+----
+expected non zero digit
+----
+
+Sometimes you may want to return more helpful, domain specific error messages.
+For example instead of error on char level you would like to say that the literal is invalid.
 
 [source, java]
 ----
 var identifier = seq(nonZeroDigit(), many(digit())).str();
-identifier = identifier.setErrorMessage("wrong identifier");
+identifier = identifier.setErrorMessage("wrong literal");
 
 var result = identifier.parse("01");
 
 out.println(result.error());
-// wrong identifier
 ----
 
-The way it works is that the top-most override wins, so
-if you set the error message on the tree root then you will get
-single error for anything. This is why it should be used sparingly
-on "tokenization" level.
+----
+wrong literal
+----
 
-Sometimes though you want to inspect the hierarchy of rules applied.
-This is possible with
+You can do that with link:apidocs/org/jparsec/Matcher.html#setErrorMessage(java.lang.String)[setErrorMessage()] method on the matcher. It has
+the tradeoff that the topmost customized message overrides all error messages on the bottom. So it
+should be used sparingly and only for non-related rules.
+
+There are various methods on the result to inspect the error further.
+
+* link:apidocs/org/jparsec/containers/MatchResult.html#errorTrace()[errorTrace()]
+* link:apidocs/org/jparsec/containers/MatchResult.html#errorPrettyPrint()[errorPrettyPrint()]
+* link:apidocs/org/jparsec/containers/MatchResult.html#verboseErrors()[verboseErrors()]
+
+*errorTrace()* allows to investige the whole "stack" from top to bottom when the matcher fails.
 
 [source, java]
 ----
 out.println(result.errorTrace());
 ----
-
-Which gets
-
 ----
 Line: 0, Column: 0 => error in mapping
  +- Line: 0, Column: 0 => error in sequence
   +- Line: 0, Column: 0 => expected non zero digit
 ----
 
-But some rules are optimistic and always return the positive result:
-like `many()` `opt()` and `sepBy()`.
-
-To inspect these errors you can view all the errors encountered, but
-be vary that sometimes these are false positives.
+Unfortunately it won't print the stack for optimistic rules like
+`many()` `opt()` and `sepBy()`. But errors are still logged and
+you can view all the logs with *verboseErrors()*. Just take into
+account that some errors are completely normal during the parsing.
 
 [source, java]
 ----
@@ -66,8 +78,8 @@ out.println(result.verboseErrors());
 Line: 0, Column: 2 => expected 'a'
 ----
 
-The most detailed error message with source context
-can be obtained in this way:
+For obtaining compiler like messages with line number, column and content context
+you can use *errorPrettyPrint()*.
 
 [source, java]
 ----
