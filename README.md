@@ -39,61 +39,27 @@ For usage there a several recommended options:
 * java 24 implicit class main functions
 
 
-## Quick example
+## Examples
 
-```java
-public void main() {
+There are some non-trivial examples in [examples](examples) folder.
 
-    var year = times(digit(), 4).str()
-            .map(Integer::valueOf);
+* parsing CSV tables
+* expression calculator
+* parsing iso datetime
+* simple indentation
+* simplified YAML file
 
-    var month = times(digit(), 2).str()
-            .map(Integer::valueOf)
-            .failIf(i -> i < 1 || i > 12, "wrong month");
+## License
 
-    var day = times(digit(), 2).str()
-            .map(Integer::valueOf)
-            .failIf(i -> i > 31, "wrong day");
+This repository is licensed under Apache License, version 2.0
 
-    var date = seq(
-            year,
-            anyOf('-'),
-            month,
-            anyOf('-'),
-            day
-    ).map(t -> LocalDate.of(t.one(), t.three(), t.five()));
+## Contributing
 
-    var hour = times(digit(), 2).str()
-            .map(Integer::valueOf)
-            .failIf(i -> i > 24, "wrong hour");
+* submit issues
+* submit PRs 
+* write benchmarks
+* help with imperative, fast parser generation
 
-    var minute = times(digit(), 2).str()
-            .map(Integer::valueOf)
-            .failIf(i -> i > 59, "wrong minute");
+## Thanks
 
-    var second = times(digit(), 2).str()
-            .map(Integer::valueOf)
-            .failIf(i -> i > 59, "wrong second");
-
-    var time = seq(
-            anyOf('T'),
-            hour,
-            anyOf(':'),
-            minute,
-            anyOf(':'),
-            second
-    ).map(t -> LocalTime.of(t.two(), t.four(), t.six()));
-
-    var datetime = choice(
-            seq(date, time),
-            date
-    ).map(e -> switch (e) {
-        case Left(Pair<LocalDate, LocalTime> p) -> new Left<>(  LocalDateTime.of(p.first(), p.second()));
-        case Right(LocalDate value) -> new Right<>(value);
-    });
-
-    println(datetime.parse("2024-03-23"));
-    println(datetime.parse("2024-03-23T11:33:01"));
-    println(datetime.parse("2024-13-23"));
-}
-```
+If you liked it a little, give it a start
