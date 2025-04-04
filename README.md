@@ -1,7 +1,7 @@
 # JavaParsec
 Parser combinators for Java 21
 
-[Documentation](dgawlik.github.io/JavaParsec-docs/ )
+[Documentation](https://dgawlik.github.io/JavaParsec-docs/ )
 
 ## Motivation
 
