@@ -11,4 +11,8 @@ include::tutorial.adoc[]
 
 include::errorhandling.adoc[]
 
+include::mapping.adoc[]
+
+include::indentation.adoc[]
+
 include::documentation.adoc[]

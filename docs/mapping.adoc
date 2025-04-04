@@ -1,2 +1,49 @@
 = Mapping parser results
 
+Matchers resemble monads in a way that they "wrap" the
+returned results. So if there is a `Matcher<Integer>` on success
+it will return `ParseResult<Integer>` which you can get with
+link:apidocs/org/jparsec/containers/MatchResult.html#ok()[ok()] method.
+
+link:apidocs/org/jparsec/Matcher.html#map(java.util.function.Function)[map()] concerns itself only
+with success results. It is applied on success and runs the provided function during parse time. On
+the method invocation if you pass mapper returnin `U` you will get
+`Matcher<U>` as a result.
+
+[source, java]
+----
+var num = some(digit()).str()
+        .map(s -> Integer.valueOf(s));
+
+
+num.assertEquals(
+        Context.of("123"),
+        Integer.valueOf(123));
+----
+
+
+link:apidocs/org/jparsec/Matcher.html#mapOrError(java.util.function.Function)[mapOrError()] is more generic and allows to act on link:apidocs/org/jparsec/containers/MatchResult.html[MatchResult] itself.
+This may be required if you want to map Ok result to Err of ignore Err for some reason and return default.
+
+[source, java]
+----
+var str = some(digit()).str()
+        .mapOrError(res -> switch (res) {
+            case Ok(String s, Context ctx) -> {
+                if (s.equals("hello world")) {
+                    yield new Err<>("wrong string", ctx);
+                } else {
+                    yield new Ok<>(s, ctx);
+                }
+            }
+            case Err e -> e;
+
+        });
+
+
+   assert str.parse("hello world").error().equals("wrong string");
+----
+
+In link:apidocs/org/jparsec/Ops.html[Ops] you will find convenence methods
+that implement common mapping tasks.
+
