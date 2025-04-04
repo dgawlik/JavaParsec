@@ -5,8 +5,10 @@ Writing simplified Markdown parser
 === Intro
 
 In this section we will parse subset of Markdown
-syntax with library constructs. We will skip parsing
-code blocks and thematic breaks leaving only 4 productions.
+syntax with library constructs. To make this part shorter this
+won't be the full Markdown sytax. Markdown handles content as
+a list of blocks. It can be either a heading title, paragraph or a block quote.
+They are separated by a blank line - a line that contains only whitespaces.
 
 ----
 MarkdownDocument  ::=  Block*
@@ -16,15 +18,15 @@ Block             ::=  HeadingBlock
                    |  BlankLine
 ----
 
-Heading block will start with multiplicity of '#' and end with a newline.
+Heading block starts with multiplicity of '#' contains alphanumeric characters and
+is ended by a newline.
 
 ----
 ATXHeading      ::=  "#"{1, 6} [Space] Text LineBreak
 ----
 
-On the other hand paragraph will allow single line breaks which will be not
-considered after parsing. It will allow for formatting text with common markdown
-punctuation.
+On the other hand paragraph allows single line breaks. It will allow for formatting text with common markdown
+punctuation, like strong, italics and code.
 
 ----
 Paragraph       ::=  (InlineContent (Space | LineBreak)*)+
@@ -37,13 +39,14 @@ Block quote consists of text lines prefixed by '>'
 BlockQuote      ::=  (">" [Space] Text LineBreak)+
 ----
 
-We will also need blank lines to separate text blocks:
+And finally the blank line.
 
 ----
 BlankLine       ::=  (Space | Tab)* LineBreak
 ----
 
-And finally the inline content is as follows:
+Inline content in this example appears only in paragraph. It is a couple of
+variant either normal text or formatted.
 
 ----
 InlineContent    ::=  InlineElement*
@@ -52,11 +55,7 @@ InlineElement    ::=  Text
                    |  Strong
                    |  InlineCode
                    |  Link
-----
 
-Text is unicode characters without markdown punctuation.
-
-----
 Emphasis ::= `"*" Text "*"
 Strong = "**" Text "**"
 InlineCode  = "`" Text "`"
@@ -65,10 +64,10 @@ Link   =  "[" Text "]" "(" Text ")"
 
 === Parsing inline elements
 
-So the text element are plain characters without the puctuation of markdown. First
-we write a rule for single char. `noneOf` matches any of the characters that is not specified.
-Then we will take many occurences with the requirement of at least one char present - `some`.
-`some()` returns a list of chars so we have to map it to string - a `str()` method does that.
+Text elements are plain characters without the puctuation of markdown. `noneOf` matches any of the characters that is not specified.
+Then we can combine it with higher level parser combinator - `some`.
+`some()` takes at least one or more occurences of given inner parser. Since
+we fed it with single char parser we get list of chars. A convenience method `str()` will join them into string.
 
 [source, java]
 ----
@@ -84,7 +83,8 @@ public void main(String[] args) {
 }
 ----
 
-Lets test that the punctuation is not parsed
+Combinators are greedy that they will take up input until it is valid. So in the
+case of encountering markdown punctuation, `text` parser will stop there.
 
 [source, java]
 ----
@@ -107,9 +107,15 @@ public void main(String[] args) {
 ----
 
 `some()` succeeded because we have at least one character matching, but
-the text got parsed up to the first occurence of '*'. We will handle the error later.
-To make the assertions inline we can use convenience methods on the result,
-`assertEquals` which throw exception if condition not met.
+the text got parsed up to the first occurence of '*'.
+
+To make fast assertions inline we can use convenience methods on the parser itself.
+Take a look at:
+
+* link:apidocs/org/jparsec/Matcher.html#assertEquals(org.jparsec.containers.Context,T)[assertEquals]
+* link:apidocs/org/jparsec/Matcher.html#assertFails(java.lang.String)[assertFails]
+* link:apidocs/org/jparsec/Matcher.html#assertParses(java.lang.String)[assertParses]
+
 
 [source, java]
 ----
@@ -124,8 +130,9 @@ public void main(String[] args) {
 }
 ----
 
-Moving to the next elements we can reuse the text rule. But first we
-introduce sealed interface with records to hold variants.
+Before we introduce next rule it will be good to define conatiners for the results.
+If you had a chance to meet _Algebraic Data Types_ then sealed interfaces and records are
+the way to achieve this result.
 
 [source, java]
 ----
@@ -138,8 +145,9 @@ sealed interface Inline {
 }
 ----
 
-We have to "capture" the char '*' on start and end and text goes in the middle.
-The we will take the middle value from `Tuple3` and map it to constructor.
+Here we will write emphasis parser. It is enclosed in '*' characters and inside there is
+normal text. We can model one rule occuring after another with link:apidocs/org/jparsec/Api.html#seq(org.jparsec.Matcher,org.jparsec.Matcher,org.jparsec.Matcher)[seq()] combinator that takes
+up to 7 rules. What is important that it is totally typesafe thanks to generics.
 
 [source, java]
 ----
@@ -155,15 +163,15 @@ Result
 Text[value=emphasis]
 ----
 
+Quick assertion that formatted text will not pass.
+
 [source, java]
 ----
-emphasis.assertFails("* emphasis `code`*");
+emphasis.assertFails("*emphasis `code`*");
 ----
+Text gets only parsed up to '`', but then we have to end the rule with '*' which is not matched.
 
-In this way we make sure that everything is correct. Text gets only
-parsed up to '`', but then we have to end the rule with '*' which is not matched.
-
-The following are the other rules
+The other rules are handled in similar fashion.
 
 [source, java]
 ----
@@ -209,15 +217,19 @@ public void main(String[] args) {
 }
 ----
 
+The result:
+
 ----
 [Text[value=text with ], Strong[value=strong], Text[value= and ], Code[value=code]]
 ----
 
 === Parsing blocks
 
-Blocks are separated by two newlines. The more complex case is paragraph because it
-has to incorporate stylized text. For headers and links we can just parse simple text.
-Starting with paragraph:
+The most complex case is paragraph because it has to incorporate stylized text.
+For headers and links we will just parse simple text.
+link:apidocs/org/jparsec/Api.html#sepBy(org.jparsec.Matcher,org.jparsec.Matcher)[sepBy()] parser
+will intercalate first parser with the second parser. The separator can be just anything, here
+we will just use newline or multiplicity of spaces.
 
 [source, java]
 ----
@@ -230,7 +242,8 @@ var r3 = paragraph.parse("""
 assert r3.isOk();
 ----
 
-The block quote in this tutorial is a normal text without punctuation, but each  line starts with '>'.
+Block quote is a possibly multiline text each line starting with '>'. Here we will join on newlines and
+we will merge strings with space as separator.
 
 [source, java]
 ----
@@ -246,7 +259,7 @@ var r4 = blockQuote.parse("""
 assert r4.ok().equals("first line second line");
 ----
 
-Then we have to separate the blocks.
+We can separate whole blocks by a blank line.
 
 [source, java]
 ----
@@ -260,7 +273,8 @@ var r5 = sepBy(paragraph, blankLine).parse("""
 assert r5.ok().size() == 2;
 ----
 
-Heading is a simple text prefixed by number of '#' s.
+Heading is a simple text prefixed by number of '#' s. We can use link:apidocs/org/jparsec/Api.html#times(org.jparsec.Matcher,int,int)[times()]
+matcher which asserts that the number of inner rule's occurrences is exactly in the range.
 
 [source, java]
 ----
@@ -273,6 +287,10 @@ var heading = seq(
 
 heading.assertEquals(Context.of("## heading 2"), new Block.HeadingBlock(2, "heading 2"));
 ----
+
+Quick note on mapping method. Sequences return link:apidocs/org/jparsec/containers/seq/Tuple3.html[tuple objects]
+that are again up to 7. They are typesafe with the help of generics.
+
 
 And now we are ready to combine everything together:
 
