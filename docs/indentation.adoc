@@ -1,4 +1,49 @@
-= Working with indentation
+= Working with indentation and recursion
 
 Indentation inside the library is handled with a smart trick.
+Whenever link:apidocs/org/jparsec/Api.html#indent(org.jparsec.Matcher,java.lang.String)[indent()] takes a rule
+it establishes a scope with indentation incremented that is passed around with Context. Multiple nested indents are supported.
+link:apidocs/org/jparsec/Api.html#nl()[nl()] on the other hand is a newline, but
+it is _indentation sensitive_. It not only takes newline, but also trims input from indentation pattern
+times the indentation level. Here is the example:
+
+[source, java]
+----
+ Recursive<Element> elementOrContainer = recursive();
+   var text = some(alphaNum()).str();
+   var element = text
+        .map(s -> (Element) new Element.Simple(s));
+   var container = seq(
+        text,
+        c(":"),
+        indent(
+            some(
+                seq(
+                    nl(),
+                    c("- "),
+                    elementOrContainer
+                ).map(Ops::takeLast)
+            ), "  "
+        )
+    ).map(v -> (Element) new Element.Container(v.one(), v.three()));
+
+    elementOrContainer.set(any(container, element));
+
+    out.println(elementOrContainer.parse(
+"""
+container1:
+  - element1
+  - element2
+"""
+    ).ok());
+----
+
+----
+Container[key=container1, children=[Simple[value=element1], Simple[value=element2]]]
+----
+
+There is a happens-before problem for recursive rules. `elementOrContainer` needs to be
+defined before all the other rules, but for itself needs other rules definitions. To resolve
+this we used link:apidocs/org/jparsec/Api.html#recursive()[recursive()] combinator which
+acts as forward declaration, and is updated later on.
 
