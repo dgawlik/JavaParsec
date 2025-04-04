@@ -1,0 +1,27 @@
+= Contribution
+
+There are several ways to help.
+
+The library will be only as good as the much of the exposure to the
+community. If you would like to play around with the library and fill
+in some (inevitable) bugs, feel free to submit issues on the repository.
+
+=== Github
+
+Link: https://github.com/dgawlik/JavaParsec
+
+There is also interesting topic of how bad is the performance. Some
+benchmarks are needed. If I have time I will write them, but maybe you
+will be faster so you can submit PR.
+
+There is also potential for writing more specialized combinators, if you have
+an idea contact me by email, it is under my github account.
+
+Finally the most interesting topic - generating the imperative parser in Java.
+The outline would be to add definition tree generation in the rules, with mapping functions
+disassembled and pasted to the resulting parser. Rules on chars would be coalesced to
+regexes/tokenization. If you would like to work on this topic feel free, even better contact me
+beforehand.
+
+If you found *JavaParsec* at least interesting, would you consider giving it a star?
+

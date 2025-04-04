@@ -16,3 +16,5 @@ include::mapping.adoc[]
 include::indentation.adoc[]
 
 include::documentation.adoc[]
+
+include::contributing.adoc[]
