@@ -13,7 +13,7 @@ The amount of work is sometimes prohibitive for starting small and
 just experimenting with ideas. On the other hand generating full blown parser from
 ANTLR makes the iteration loops longer plus you have to learn a new library.
 
-Pure functional languages are attractive for write parsers, because of:
+Pure functional languages are attractive for writing parsers, because of:
 
 * *REPL and quick iteration loops* -  code consists of small or medium-sized
 functions that are directly testable in eval loop.
