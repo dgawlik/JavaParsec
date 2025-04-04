@@ -1,6 +1,8 @@
 # JavaParsec
 Parser combinators for Java 21
 
+[Documentation](dgawlik.github.io/JavaParsec-docs/ )
+
 ## Motivation
 
 Writing a parser for new programming language is a big commitment.
@@ -62,4 +64,4 @@ This repository is licensed under Apache License, version 2.0
 
 ## Thanks
 
-If you liked it a little, give it a start
+If you liked it a little, give it a star!
